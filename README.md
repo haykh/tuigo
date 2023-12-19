@@ -2,6 +2,8 @@
 
 ## a terminal UI framework written in Go using the `bubbletea` library.
 
+![demo](demo.gif)
+
 see `example/` for an example usage of `tuigo`. the scheme below shows roughly the structure of the API.
 
 ```mermaid
