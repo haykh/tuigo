@@ -1,4 +1,4 @@
-package multiselect
+package selector
 
 import (
 	"fmt"
@@ -13,18 +13,20 @@ import (
 
 type Model struct {
 	component.Component
-	cursor   int
-	options  []string
-	selected map[string]struct{}
-	disabled map[string]struct{}
+	multiselect bool
+	cursor      int
+	options     []string
+	selected    map[string]struct{}
+	disabled    map[string]struct{}
 }
 
-func New(options []string) Model {
+func New(options []string, multiselect bool) Model {
 	return Model{
-		cursor:   0,
-		options:  options,
-		selected: map[string]struct{}{},
-		disabled: map[string]struct{}{},
+		multiselect: multiselect,
+		cursor:      0,
+		options:     options,
+		selected:    map[string]struct{}{},
+		disabled:    map[string]struct{}{},
 	}
 }
 
@@ -50,7 +52,7 @@ func (m Model) Update(msg tea.Msg) (component.Updater, tea.Cmd) {
 }
 
 func (m Model) View() string {
-	return ui.MultiSelectView(m.cursor, m.options, m.selected, m.disabled, m.Focused())
+	return ui.SelectorView(m.multiselect, m.cursor, m.options, m.selected, m.disabled, m.Focused())
 }
 
 // access
@@ -68,7 +70,12 @@ func (m *Model) Toggle() {
 	if _, ok := m.selected[m.options[m.cursor]]; ok {
 		delete(m.selected, m.options[m.cursor])
 	} else {
-		m.selected[m.options[m.cursor]] = struct{}{}
+
+		if !m.multiselect {
+			m.selected = map[string]struct{}{m.options[m.cursor]: {}}
+		} else {
+			m.selected[m.options[m.cursor]] = struct{}{}
+		}
 	}
 }
 

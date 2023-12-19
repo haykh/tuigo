@@ -7,13 +7,30 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/haykh/tuigo/component"
 	"github.com/haykh/tuigo/component/button"
+	"github.com/haykh/tuigo/component/pathinput"
+	"github.com/haykh/tuigo/component/radio"
+	"github.com/haykh/tuigo/component/selector"
 	"github.com/haykh/tuigo/debug"
 	"github.com/haykh/tuigo/keys"
 	"github.com/haykh/tuigo/ui"
 	"github.com/haykh/tuigo/utils"
 )
 
-// app
+type State interface {
+	Label() string
+	Next() State
+	Prev() State
+}
+
+type Actor interface {
+	Action() tea.Msg
+}
+
+type Messenger interface {
+	Message() string
+}
+
+// App
 
 type App struct {
 	state    utils.State
@@ -65,10 +82,8 @@ func (m App) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 func (m App) View() string {
 	fieldView := m.fields[m.state].View()
 	debugView := ui.DebugView(m.debugger.Enabled(), m.debugger.Get())
-	return ui.BaseView(fieldView, debugView)
+	return ui.AppView(fieldView, debugView)
 }
-
-// access
 
 func (m App) AddField(st utils.State, f Field) App {
 	m.fields[st] = f
@@ -156,8 +171,6 @@ func (f Field) View() string {
 	)
 }
 
-// access
-
 func (f Field) AddElement(element component.Viewer) Field {
 	f.elements = append(f.elements, element)
 	f.FocusNext()
@@ -240,4 +253,22 @@ func (f *Field) FocusFirst() {
 		}
 		focusers[0].Focus()
 	}
+}
+
+// Components
+
+func NewRadio(label string) radio.Model {
+	return radio.New(label)
+}
+
+func NewPathInput(label, def, placeholder string) pathinput.Model {
+	return pathinput.New(label, def, placeholder)
+}
+
+func NewButton(label string, btnType utils.ButtonType, msg tea.Msg) button.Model {
+	return button.New(label, btnType, msg)
+}
+
+func NewSelector(options []string, multiselect bool) selector.Model {
+	return selector.New(options, multiselect)
 }

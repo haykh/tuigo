@@ -6,10 +6,6 @@ import (
 
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/haykh/tuigo"
-	"github.com/haykh/tuigo/component/button"
-	"github.com/haykh/tuigo/component/multiselect"
-	"github.com/haykh/tuigo/component/pathinput"
-	"github.com/haykh/tuigo/component/radio"
 	"github.com/haykh/tuigo/utils"
 )
 
@@ -48,26 +44,27 @@ var TestStates []testState = newTestStates()
 
 func newTestFields() map[utils.State]tuigo.Field {
 	flds := map[utils.State]tuigo.Field{}
-	selector1 := multiselect.New([]string{"option1", "option2", "option3"})
-	selector2 := multiselect.New([]string{"option4", "option5", "option6"})
-	selector3 := multiselect.New([]string{"option7", "option8", "option9"})
-	radio1 := radio.New("radio1")
+	selector1 := tuigo.NewSelector([]string{"option1", "option2", "option3"}, true)
+	selector1.Disable("option2")
+	selector2 := tuigo.NewSelector([]string{"option4", "option5", "option6"}, false)
+	selector3 := tuigo.NewSelector([]string{"option7", "option8", "option9"}, false)
+	radio1 := tuigo.NewRadio("radio1")
 	flds[TestStates[0]] = tuigo.NewField("window1", true, false).
 		AddElement(&selector1).
 		AddElement(&selector2).
 		AddElement(&radio1).
 		AddElement(&selector3)
 
-	btn1 := button.New("click me", utils.SimpleBtn, nil)
-	radio2 := radio.New("radio2")
+	btn1 := tuigo.NewButton("click me", utils.SimpleBtn, nil)
+	radio2 := tuigo.NewRadio("radio2")
 
 	flds[TestStates[1]] = tuigo.NewField("window2", false, false).
 		AddElement(&btn1).
 		AddElement(&radio2)
 
-	btn2 := button.New("yes babe", utils.SimpleBtn, nil)
+	btn2 := tuigo.NewButton("yes, press me", utils.SimpleBtn, nil)
 
-	pathinput1 := pathinput.New("source path", "$HOME/", "<default>")
+	pathinput1 := tuigo.NewPathInput("source path", "$HOME/", "<default>")
 
 	flds[TestStates[2]] = tuigo.NewField("window3", false, true).AddElement(&btn2).AddElement(&pathinput1)
 	return flds

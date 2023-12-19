@@ -22,7 +22,7 @@ classDiagram
 class tuigo["tuigo"]
 class tui_utils["tuigo/utils"]
 class tui_field["tuigo"]
-class tui_component["tuigo/component"]
+class tui_component["tuigo"]
 
 tuigo <-- tui_utils : initial state
 tuigo <-- tui_field : mapping from states to fields
@@ -37,11 +37,19 @@ tui_utils : utils.State
 tui_field : NewField(string, bool, bool) Field
 tui_field : Field
 
-tui_component : Field.AddElement(&component)
-tui_component : button
-tui_component : multiselect
-tui_component : radio
-tui_component : pathinput
+tui_component : Field.AddElement(&component) Field
+tui_component : NewButton(string, utils.ButtonType, tea.Msg) button.Model
+tui_component : NewSelector([]string, bool) selector.Model
+tui_component : NewRadio(string) radio.Model
+tui_component : NewPathInput(string, string, string) button.Model
 
 tui_field <-- tui_component : populate the field with interactive components
 ```
+
+## TODO
+
+- [ ] customizable theme
+- [ ] more components
+- [ ] grid structure
+- [ ] key help menu
+- [ ] field validator

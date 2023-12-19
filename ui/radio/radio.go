@@ -4,12 +4,14 @@ import (
 	"fmt"
 
 	"github.com/charmbracelet/lipgloss"
+	"github.com/haykh/tuigo/ui/theme"
 )
 
 var (
-	style         = lipgloss.NewStyle()
-	focusedStyle  = style.Copy().Underline(true)
-	stateOnStyle  = lipgloss.NewStyle()
+	style         = lipgloss.NewStyle().MarginBottom(1).MarginLeft(2)
+	focusedStyle  = lipgloss.NewStyle().Underline(true)
+	unfocsedStyle = lipgloss.NewStyle().Foreground(theme.ColorDimmed)
+	stateOnStyle  = lipgloss.NewStyle().Foreground(theme.ColorSuccess)
 	stateOffStyle = lipgloss.NewStyle()
 )
 
@@ -24,12 +26,14 @@ func View(label string, state, focused bool) string {
 	if focused {
 		focusstyle = focusedStyle
 	} else {
-		focusstyle = style
+		focusstyle = unfocsedStyle
 	}
+	lb := focusstyle.Copy().Underline(false).Render("(")
+	rb := focusstyle.Copy().Underline(false).Render(")")
 	if state {
 		stateview = stateOnStyle.Render(stateOn)
 	} else {
 		stateview = stateOffStyle.Render(stateOff)
 	}
-	return fmt.Sprintf("(%s) %s", stateview, focusstyle.Render(label))
+	return style.Render(fmt.Sprintf("%s%s%s %s", lb, stateview, rb, focusstyle.Render(label)))
 }
