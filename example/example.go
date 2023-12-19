@@ -64,7 +64,7 @@ func newTestFields() map[utils.State]tuigo.Field {
 
 	btn2 := tuigo.NewButton("yes, press me", utils.SimpleBtn, nil)
 
-	pathinput1 := tuigo.NewPathInput("source path", "$HOME/", "<default>")
+	pathinput1 := tuigo.NewInput("source path", "$HOME/", "<default>", utils.PathInput)
 
 	flds[TestStates[2]] = tuigo.NewField("window3", false, true).AddElement(&btn2).AddElement(&pathinput1)
 	return flds

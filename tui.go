@@ -7,7 +7,7 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/haykh/tuigo/component"
 	"github.com/haykh/tuigo/component/button"
-	"github.com/haykh/tuigo/component/pathinput"
+	"github.com/haykh/tuigo/component/input"
 	"github.com/haykh/tuigo/component/radio"
 	"github.com/haykh/tuigo/component/selector"
 	"github.com/haykh/tuigo/debug"
@@ -261,8 +261,8 @@ func NewRadio(label string) radio.Model {
 	return radio.New(label)
 }
 
-func NewPathInput(label, def, placeholder string) pathinput.Model {
-	return pathinput.New(label, def, placeholder)
+func NewInput(label, def, placeholder string, inputtype utils.InputType) input.Model {
+	return input.New(label, def, placeholder, inputtype)
 }
 
 func NewButton(label string, btnType utils.ButtonType, msg tea.Msg) button.Model {

@@ -92,3 +92,17 @@ func (m *Model) Prev() {
 		m.Prev()
 	}
 }
+
+func (m Model) Selected() []string {
+	var selected []string
+	for _, o := range m.options {
+		if _, ok := m.selected[o]; ok {
+			selected = append(selected, o)
+		}
+	}
+	return selected
+}
+
+func (m Model) Cursor() int {
+	return m.cursor
+}
