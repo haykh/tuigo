@@ -41,7 +41,7 @@ tui_component : Field.AddElement(&component) Field
 tui_component : NewButton(string, utils.ButtonType, tea.Msg) button.Model
 tui_component : NewSelector([]string, bool) selector.Model
 tui_component : NewRadio(string) radio.Model
-tui_component : NewPathInput(string, string, string) button.Model
+tui_component : NewInput(string, string, string, utils.InputType) button.Model
 
 tui_field <-- tui_component : populate the field with interactive components
 ```
@@ -53,3 +53,4 @@ tui_field <-- tui_component : populate the field with interactive components
 - [ ] grid structure
 - [ ] key help menu
 - [ ] field validator
+- [x] unit tests

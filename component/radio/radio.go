@@ -50,3 +50,7 @@ func (m Model) View() string {
 func (m *Model) Toggle() {
 	m.state = !m.state
 }
+
+func (m Model) State() bool {
+	return m.state
+}
