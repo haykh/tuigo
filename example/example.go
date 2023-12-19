@@ -9,6 +9,8 @@ import (
 	"github.com/haykh/tuigo/utils"
 )
 
+// defining a state structure
+// ... which necessarily implements the tuigo.State interface
 type testState struct {
 	label string
 	next  *testState
@@ -27,6 +29,8 @@ func (ts testState) Prev() utils.State {
 	return *ts.prev
 }
 
+// a helper function to create a slice of testState
+// ... with circular references
 func newTestStates() []testState {
 	window1 := testState{label: "window1"}
 	window2 := testState{label: "window2"}
@@ -42,6 +46,8 @@ func newTestStates() []testState {
 
 var TestStates []testState = newTestStates()
 
+// a helper function to create a map of testState to tuigo.Field
+// ... tuigo.Field is a struct that holds all the elements of a window
 func newTestFields() map[utils.State]tuigo.Field {
 	flds := map[utils.State]tuigo.Field{}
 	selector1 := tuigo.NewSelector([]string{"option1", "option2", "option3"}, true)
@@ -72,6 +78,7 @@ func newTestFields() map[utils.State]tuigo.Field {
 
 var TestFields map[utils.State]tuigo.Field = newTestFields()
 
+// passing the initial state and all the fields to the tuigo.NewApp function
 func main() {
 	initialState := TestStates[0]
 	allFields := TestFields
