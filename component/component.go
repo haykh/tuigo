@@ -3,10 +3,12 @@ package component
 import (
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/haykh/tuigo/utils"
 )
 
 type Viewer interface {
 	View() string
+	String() string
 }
 
 type Focuser interface {
@@ -21,11 +23,23 @@ type Updater interface {
 }
 
 type Component struct {
-	focused bool
+	componentType utils.ComponentType
+	focused       bool
+}
+
+func NewComponent(componentType utils.ComponentType) Component {
+	return Component{
+		componentType: componentType,
+		focused:       false,
+	}
 }
 
 func (f Component) Focused() bool {
 	return f.focused
+}
+
+func (f Component) String() string {
+	return f.componentType
 }
 
 func (f *Component) Focus() tea.Cmd {
@@ -38,7 +52,19 @@ func (f *Component) Blur() {
 }
 
 type TextInputWrap struct {
-	Model textinput.Model
+	componentType utils.ComponentType
+	Model         textinput.Model
+}
+
+func (t TextInputWrap) String() string {
+	return t.componentType
+}
+
+func NewTextInputWrap(model textinput.Model) TextInputWrap {
+	return TextInputWrap{
+		componentType: utils.Input,
+		Model:         model,
+	}
 }
 
 func (t TextInputWrap) Focused() bool {
