@@ -87,8 +87,8 @@ func TestContainer(t *testing.T) {
 		if component0.Focused() {
 			t.Errorf("expected component #0 to be unfocused")
 		}
-		if component1.Focused() {
-			t.Errorf("expected component #1 to be unfocused")
+		if !component1.Focused() {
+			t.Errorf("expected component #1 to be focused")
 		}
 		container = container.Blur().(Container)
 	}

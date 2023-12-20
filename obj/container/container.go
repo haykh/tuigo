@@ -125,6 +125,14 @@ func (c Container) Blur() obj.Collection {
 func (c Container) FocusNext() (obj.Collection, tea.Cmd) {
 	type FocusChangedMsg struct{}
 	if c.Focusable() && c.Focused() {
+		last_col_id := -1
+		for e, element := range c.elements {
+			if _, ok := element.(obj.Collection); ok {
+				if e > last_col_id {
+					last_col_id = e
+				}
+			}
+		}
 		focus_next := false
 		for e, element := range c.elements {
 			if el, ok := element.(obj.Collection); ok {
@@ -139,7 +147,9 @@ func (c Container) FocusNext() (obj.Collection, tea.Cmd) {
 					if cmd != nil {
 						switch cmd().(type) {
 						case utils.FocusNextMsg:
-							c.elements[e] = el.Blur()
+							if e < last_col_id {
+								c.elements[e] = el.Blur()
+							}
 							focus_next = true
 						case FocusChangedMsg:
 							return c, nil
@@ -158,6 +168,14 @@ func (c Container) FocusNext() (obj.Collection, tea.Cmd) {
 func (c Container) FocusPrev() (obj.Collection, tea.Cmd) {
 	type FocusChangedMsg struct{}
 	if c.Focusable() && c.Focused() {
+		first_col_id := len(c.elements) + 1
+		for e, element := range c.elements {
+			if _, ok := element.(obj.Collection); ok {
+				if e < first_col_id {
+					first_col_id = e
+				}
+			}
+		}
 		focus_prev := false
 		for e := len(c.elements) - 1; e >= 0; e-- {
 			element := c.elements[e]
@@ -173,7 +191,9 @@ func (c Container) FocusPrev() (obj.Collection, tea.Cmd) {
 					if cmd != nil {
 						switch cmd().(type) {
 						case utils.FocusPrevMsg:
-							c.elements[e] = el.Blur()
+							if e > first_col_id {
+								c.elements[e] = el.Blur()
+							}
 							focus_prev = true
 						case FocusChangedMsg:
 							return c, nil

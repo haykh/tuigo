@@ -8,7 +8,7 @@ import (
 
 var (
 	style          = theme.ContainerStyle.Copy()
-	focusedStyle   = style.Copy().Border(lipgloss.RoundedBorder())
+	focusedStyle   = style.Copy()
 	unfocusedStyle = style.Copy()
 )
 
