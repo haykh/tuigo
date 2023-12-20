@@ -19,8 +19,9 @@ type Model struct {
 
 func New(label string) Model {
 	return Model{
-		label: label,
-		state: false,
+		Component: component.NewComponent(utils.Radio),
+		label:     label,
+		state:     false,
 	}
 }
 

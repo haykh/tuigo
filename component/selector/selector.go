@@ -22,6 +22,7 @@ type Model struct {
 
 func New(options []string, multiselect bool) Model {
 	return Model{
+		Component:   component.NewComponent(utils.Selector),
 		multiselect: multiselect,
 		cursor:      0,
 		options:     options,

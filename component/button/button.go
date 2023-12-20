@@ -20,9 +20,10 @@ type Model struct {
 
 func New(label string, btntype utils.ButtonType, action tea.Msg) Model {
 	return Model{
-		label:   label,
-		btntype: btntype,
-		action:  action,
+		Component: component.NewComponent(utils.Button),
+		label:     label,
+		btntype:   btntype,
+		action:    action,
 	}
 }
 

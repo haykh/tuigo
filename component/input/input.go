@@ -28,7 +28,7 @@ func New(label, def, placeholder string, inputtype utils.InputType) Model {
 		m.KeyMap.PrevSuggestion = keys.Keys.Up
 	}
 	return Model{
-		TextInputWrap: component.TextInputWrap{Model: m},
+		TextInputWrap: component.NewTextInputWrap(m),
 		inputtype:     inputtype,
 	}
 }
