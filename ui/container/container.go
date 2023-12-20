@@ -1,24 +1,35 @@
 package container
 
 import (
-	"os"
-
 	"github.com/charmbracelet/lipgloss"
 	"github.com/haykh/tuigo/ui/theme"
-	"golang.org/x/term"
+	"github.com/haykh/tuigo/utils"
 )
 
 var (
-	labelStyle = lipgloss.NewStyle().Foreground(theme.ColorAccent).MarginBottom(1)
+	style          = theme.ContainerStyle.Copy()
+	focusedStyle   = style.Copy().Border(lipgloss.RoundedBorder())
+	unfocusedStyle = style.Copy()
 )
 
-func View(label string, contents ...string) string {
-	w, _, _ := term.GetSize(int(os.Stdout.Fd()))
-	labelview := labelStyle.Width(w - 1).Align(lipgloss.Center).Render(label)
-	return lipgloss.JoinVertical(
-		lipgloss.Left,
-		append([]string{labelview}, contents...)...,
-	)
+func View(focused bool, containerType utils.ContainerType, contents ...string) string {
+	var focus_style lipgloss.Style
+	if focused {
+		focus_style = focusedStyle
+	} else {
+		focus_style = unfocusedStyle
+	}
+	if containerType == utils.VerticalContainer {
+		return focus_style.Render(lipgloss.JoinVertical(
+			lipgloss.Left,
+			contents...,
+		))
+	} else {
+		return focus_style.Render(lipgloss.JoinHorizontal(
+			lipgloss.Top,
+			contents...,
+		))
+	}
 }
 
 func ControlView(controls ...string) string {

@@ -6,14 +6,33 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 )
 
-type ComponentType = string
+// container types
+type ContainerType int
 
 const (
-	Container ComponentType = "container"
-	Button    ComponentType = "button"
-	Input     ComponentType = "input"
-	Radio     ComponentType = "radio"
-	Selector  ComponentType = "selector"
+	SimpleContainer ContainerType = iota
+	VerticalContainer
+	HorizontalContainer
+)
+
+// text types
+type TextType int
+
+const (
+	NormalText TextType = iota
+	LabelText
+	DimmedText
+)
+
+// item types
+type ItemType = string
+
+const (
+	Container ItemType = "container"
+	Button    ItemType = "button"
+	Input     ItemType = "input"
+	Radio     ItemType = "radio"
+	Selector  ItemType = "selector"
 )
 
 // button types
@@ -34,25 +53,11 @@ const (
 	TextInput
 )
 
-// window states
-type State interface {
-	Label() string
-	Next() State
-	Prev() State
-}
+// text types
 
-// actions & messages
-type Actor interface {
-	Action() tea.Msg
-}
-
-type Messenger interface {
-	Message() string
-}
-
-func Callback(a Actor) tea.Cmd {
+func Callback(msg tea.Msg) tea.Cmd {
 	return func() tea.Msg {
-		return a.Action()
+		return msg
 	}
 }
 
@@ -63,9 +68,6 @@ func DebugCmd(msg string) tea.Cmd {
 }
 
 // messages
-type NextStateMsg struct{}
-type PrevStateMsg struct{}
-
 type DebugMsg struct {
 	msg string
 }
@@ -73,6 +75,9 @@ type DebugMsg struct {
 func (dbg DebugMsg) String() string {
 	return dbg.msg
 }
+
+type FocusNextMsg struct{}
+type FocusPrevMsg struct{}
 
 // for testing
 

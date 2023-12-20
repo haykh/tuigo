@@ -5,43 +5,48 @@ import (
 
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
-	"github.com/haykh/tuigo/component"
 	"github.com/haykh/tuigo/keys"
+	"github.com/haykh/tuigo/obj"
+	"github.com/haykh/tuigo/obj/container"
 	"github.com/haykh/tuigo/ui"
 	"github.com/haykh/tuigo/utils"
 )
 
+var _ obj.Element = (*Model)(nil)
+
 type Model struct {
-	component.TextInputWrap
 	inputtype utils.InputType
+	model     textinput.Model
 }
 
-func New(label, def, placeholder string, inputtype utils.InputType) Model {
+func NewTextinput(label, def, placeholder string) textinput.Model {
 	m := textinput.New()
+	m.Focus()
 	m.SetValue(def)
 	m.Placeholder = placeholder
 	m.Prompt = label
+	return m
+}
+
+func New(label, def, placeholder string, inputtype utils.InputType) obj.Element {
+	m := NewTextinput(label, def, placeholder)
 	if inputtype == utils.PathInput {
 		m.ShowSuggestions = true
 		m.KeyMap.AcceptSuggestion = keys.Keys.Right
 		m.KeyMap.NextSuggestion = keys.Keys.Down
 		m.KeyMap.PrevSuggestion = keys.Keys.Up
 	}
-	return Model{
-		TextInputWrap: component.NewTextInputWrap(m),
-		inputtype:     inputtype,
-	}
+	return container.NewSimpleContainer(true, Model{
+		inputtype: inputtype,
+		model:     m,
+	})
 }
 
-func (m Model) Init() tea.Cmd {
-	return nil
-}
-
-func (m Model) Update(msg tea.Msg) (component.Updater, tea.Cmd) {
+func (m Model) Update(msg tea.Msg) (obj.Element, tea.Cmd) {
 	if m.inputtype == utils.PathInput {
 		// update suggestions
 		var suggestions []string
-		entry := m.Model.Value()
+		entry := m.model.Value()
 		for i := len(entry) - 1; i >= 0; i-- {
 			if entry[i] == '/' {
 				entry = entry[:i+1]
@@ -56,19 +61,24 @@ func (m Model) Update(msg tea.Msg) (component.Updater, tea.Cmd) {
 			for _, e := range entries {
 				suggestions = append(suggestions, entry+e.Name())
 			}
-			m.Model.SetSuggestions(suggestions)
+			m.model.SetSuggestions(suggestions)
 		}
 	}
 
 	var cmd tea.Cmd
-	m.Model, cmd = m.Model.Update(msg)
-	return &m, cmd
+	m.model, cmd = m.model.Update(msg)
+	return m, cmd
 }
 
-func (m Model) View() string {
-	return ui.PathInputView(m.Model)
+func (m Model) View(focused bool) string {
+	if focused {
+		m.model.Focus()
+	} else {
+		m.model.Blur()
+	}
+	return ui.PathInputView(focused, m.model)
 }
 
 func (m Model) Value() string {
-	return m.Model.Value()
+	return m.model.Value()
 }

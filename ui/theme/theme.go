@@ -9,3 +9,8 @@ var (
 	ColorSpecial = lipgloss.AdaptiveColor{Light: "#ee9723", Dark: "#F3B562"}
 	ColorAccent  = lipgloss.AdaptiveColor{Light: "#ea2323", Dark: "#F06060"}
 )
+
+var (
+	ElementStyle   = lipgloss.NewStyle().MarginLeft(2).MarginBottom(1)
+	ContainerStyle = lipgloss.NewStyle().PaddingRight(1).PaddingTop(1)
+)

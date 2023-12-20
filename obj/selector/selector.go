@@ -5,14 +5,16 @@ import (
 
 	"github.com/charmbracelet/bubbles/key"
 	tea "github.com/charmbracelet/bubbletea"
-	"github.com/haykh/tuigo/component"
 	"github.com/haykh/tuigo/keys"
+	"github.com/haykh/tuigo/obj"
+	"github.com/haykh/tuigo/obj/container"
 	"github.com/haykh/tuigo/ui"
 	"github.com/haykh/tuigo/utils"
 )
 
+var _ obj.Element = (*Model)(nil)
+
 type Model struct {
-	component.Component
 	multiselect bool
 	cursor      int
 	options     []string
@@ -20,22 +22,17 @@ type Model struct {
 	disabled    map[string]struct{}
 }
 
-func New(options []string, multiselect bool) Model {
-	return Model{
-		Component:   component.NewComponent(utils.Selector),
+func New(options []string, multiselect bool) obj.Element {
+	return container.NewSimpleContainer(true, Model{
 		multiselect: multiselect,
 		cursor:      0,
 		options:     options,
 		selected:    map[string]struct{}{},
 		disabled:    map[string]struct{}{},
-	}
+	})
 }
 
-func (m Model) Init() tea.Cmd {
-	return nil
-}
-
-func (m Model) Update(msg tea.Msg) (component.Updater, tea.Cmd) {
+func (m Model) Update(msg tea.Msg) (obj.Element, tea.Cmd) {
 	var cmd tea.Cmd
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
@@ -49,11 +46,11 @@ func (m Model) Update(msg tea.Msg) (component.Updater, tea.Cmd) {
 			cmd = utils.DebugCmd(fmt.Sprintf("%s toggled", m.options[m.cursor]))
 		}
 	}
-	return &m, cmd
+	return m, cmd
 }
 
-func (m Model) View() string {
-	return ui.SelectorView(m.multiselect, m.cursor, m.options, m.selected, m.disabled, m.Focused())
+func (m Model) View(focused bool) string {
+	return ui.SelectorView(focused, m.multiselect, m.cursor, m.options, m.selected, m.disabled)
 }
 
 // access

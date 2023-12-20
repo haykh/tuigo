@@ -5,31 +5,28 @@ import (
 
 	"github.com/charmbracelet/bubbles/key"
 	tea "github.com/charmbracelet/bubbletea"
-	"github.com/haykh/tuigo/component"
 	"github.com/haykh/tuigo/keys"
+	"github.com/haykh/tuigo/obj"
+	"github.com/haykh/tuigo/obj/container"
 	"github.com/haykh/tuigo/ui"
 	"github.com/haykh/tuigo/utils"
 )
 
+var _ obj.Element = (*Model)(nil)
+
 type Model struct {
-	component.Component
 	label string
 	state bool
 }
 
-func New(label string) Model {
-	return Model{
-		Component: component.NewComponent(utils.Radio),
-		label:     label,
-		state:     false,
-	}
+func New(label string) obj.Element {
+	return container.NewSimpleContainer(true, Model{
+		label: label,
+		state: false,
+	})
 }
 
-func (m Model) Init() tea.Cmd {
-	return nil
-}
-
-func (m Model) Update(msg tea.Msg) (component.Updater, tea.Cmd) {
+func (m Model) Update(msg tea.Msg) (obj.Element, tea.Cmd) {
 	var cmd tea.Cmd
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
@@ -39,11 +36,11 @@ func (m Model) Update(msg tea.Msg) (component.Updater, tea.Cmd) {
 			cmd = utils.DebugCmd(fmt.Sprintf("%s toggled", m.label))
 		}
 	}
-	return &m, cmd
+	return m, cmd
 }
 
-func (m Model) View() string {
-	return ui.RadioView(m.label, m.state, m.Focused())
+func (m Model) View(focused bool) string {
+	return ui.RadioView(focused, m.label, m.state)
 }
 
 // access

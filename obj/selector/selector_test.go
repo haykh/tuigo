@@ -9,7 +9,14 @@ import (
 type TestMsg struct{}
 
 func TestSelector(t *testing.T) {
-	selector := New([]string{"option1", "option2", "option3"}, true)
+	selector := Model{
+		multiselect: true,
+		cursor:      0,
+		options:     []string{"option1", "option2", "option3"},
+		selected:    map[string]struct{}{},
+		disabled:    map[string]struct{}{},
+	}
+	// New([]string{"option1", "option2", "option3"}, true)
 	{
 		selector.Next()
 		selector.Toggle()
@@ -42,33 +49,30 @@ func TestSelector(t *testing.T) {
 	}
 	{
 		sel, _ := selector.Update(tea.KeyMsg{Type: tea.KeySpace})
-		selector = *(sel.(*Model))
+		selector = sel.(Model)
 		if len(selector.Selected()) != 2 || selector.Selected()[0] != "option1" || selector.Selected()[1] != "option3" {
 			t.Fatalf("selector did not deselect option2 with updater")
 		}
 		sel, _ = selector.Update(tea.KeyMsg{Type: tea.KeyUp})
-		selector = *(sel.(*Model))
+		selector = sel.(Model)
 		if selector.Cursor() != 0 {
 			t.Fatalf("selector did not move cursor up")
 		}
 		sel, _ = selector.Update(tea.KeyMsg{Type: tea.KeyDown})
-		selector = *(sel.(*Model))
+		selector = sel.(Model)
 		if selector.Cursor() != 1 {
 			t.Fatalf("selector did not move cursor down")
 		}
 	}
 	{
-		selector.Focus()
-		if !selector.Focused() {
-			t.Fatalf("selector did not focus")
+		// newselector := New([]string{"option1", "option2", "option3"}, false)
+		newselector := Model{
+			multiselect: false,
+			cursor:      0,
+			options:     []string{"option1", "option2", "option3"},
+			selected:    map[string]struct{}{},
+			disabled:    map[string]struct{}{},
 		}
-		selector.Blur()
-		if selector.Focused() {
-			t.Fatalf("selector did not blur")
-		}
-	}
-	{
-		newselector := New([]string{"option1", "option2", "option3"}, false)
 		newselector.Toggle()
 		newselector.Next()
 		newselector.Next()
