@@ -52,7 +52,7 @@ tui_field <-- tui_component : populate the field with interactive components
 
 - [ ] customizable theme
 - [ ] more components
-- [ ] grid structure
+- [x] grid structure
 - [ ] key help menu
 - [ ] field validator
 - [x] unit tests
