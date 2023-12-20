@@ -4,8 +4,8 @@ import (
 	"github.com/charmbracelet/bubbles/textinput"
 	"github.com/haykh/tuigo/ui/app"
 	"github.com/haykh/tuigo/ui/button"
+	"github.com/haykh/tuigo/ui/container"
 	"github.com/haykh/tuigo/ui/debug"
-	"github.com/haykh/tuigo/ui/field"
 	"github.com/haykh/tuigo/ui/pathinput"
 	"github.com/haykh/tuigo/ui/radio"
 	"github.com/haykh/tuigo/ui/selector"
@@ -18,12 +18,12 @@ func AppView(contents ...string) string {
 	return app.View(contents...)
 }
 
-func FieldView(label string, contents ...string) string {
-	return field.View(label, contents...)
+func ContainerView(label string, contents ...string) string {
+	return container.View(label, contents...)
 }
 
-func FieldControlView(controls ...string) string {
-	return field.ControlView(controls...)
+func ContainerControlView(controls ...string) string {
+	return container.ControlView(controls...)
 }
 
 func DebugView(enabled bool, dbg string) string {

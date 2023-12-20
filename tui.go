@@ -1,8 +1,6 @@
 package tuigo
 
 import (
-	"fmt"
-
 	"github.com/charmbracelet/bubbles/key"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/haykh/tuigo/component"
@@ -10,14 +8,12 @@ import (
 	"github.com/haykh/tuigo/component/input"
 	"github.com/haykh/tuigo/component/radio"
 	"github.com/haykh/tuigo/component/selector"
-	"github.com/haykh/tuigo/debug"
 	"github.com/haykh/tuigo/keys"
 	"github.com/haykh/tuigo/ui"
 	"github.com/haykh/tuigo/utils"
 )
 
 type State interface {
-	Label() string
 	Next() State
 	Prev() State
 }
@@ -30,86 +26,26 @@ type Messenger interface {
 	Message() string
 }
 
-// App
+// Container
 
-type App struct {
-	state    utils.State
-	fields   map[utils.State]Field
-	debugger debug.Debugger
-}
-
-func NewApp(state utils.State, fields map[utils.State]Field, enable_debug bool) App {
-	dbg := debug.New()
-	if enable_debug {
-		dbg.Enable()
-	}
-	mod := App{
-		state:    state,
-		fields:   fields,
-		debugger: dbg,
-	}
-	return mod
-}
-
-func (m App) Init() tea.Cmd {
-	return nil
-}
-
-func (m App) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
-	switch msg := msg.(type) {
-	case tea.KeyMsg:
-		m.debugger.Log(msg.String())
-		switch {
-		case key.Matches(msg, keys.Keys.Quit):
-			return m, tea.Quit
-		}
-	case utils.NextStateMsg:
-		m.state = m.state.Next()
-		m.debugger.Log(fmt.Sprintf("state - %s", m.state.Label()))
-		return m, nil
-	case utils.PrevStateMsg:
-		m.state = m.state.Prev()
-		m.debugger.Log(fmt.Sprintf("state - %s", m.state.Label()))
-		return m, nil
-	case utils.DebugMsg:
-		m.debugger.Log(msg.String())
-	}
-	fld, cmd := m.fields[m.state].Update(msg)
-	m.fields[m.state] = fld.(Field)
-	return m, cmd
-}
-
-func (m App) View() string {
-	fieldView := m.fields[m.state].View()
-	debugView := ui.DebugView(m.debugger.Enabled(), m.debugger.Get())
-	return ui.AppView(fieldView, debugView)
-}
-
-func (m App) AddField(st utils.State, f Field) App {
-	m.fields[st] = f
-	return m
-}
-
-// Field
-
-type Field struct {
+type Container struct {
 	elements  []component.Viewer
 	label     string
 	ncontrols int
 }
 
-func NewField(label string, isFirstField bool, isLastField bool) Field {
-	f := Field{
+func NewContainer(label string, isFirstContainer bool, isLastContainer bool) Container {
+	f := Container{
 		elements:  []component.Viewer{},
 		label:     label,
 		ncontrols: 0,
 	}
-	if !isFirstField {
+	if !isFirstContainer {
 		f.ncontrols++
 		prev := button.New("< back", utils.ControlBtn, utils.PrevStateMsg{})
 		f = f.AddElement(&prev)
 	}
-	if !isLastField {
+	if !isLastContainer {
 		f.ncontrols++
 		next := button.New("next >", utils.ControlBtn, utils.NextStateMsg{})
 		f = f.AddElement(&next)
@@ -118,11 +54,11 @@ func NewField(label string, isFirstField bool, isLastField bool) Field {
 	return f
 }
 
-func (f Field) Init() tea.Cmd {
+func (f Container) Init() tea.Cmd {
 	return nil
 }
 
-func (f Field) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+func (f Container) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	// process switching focus
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
@@ -151,7 +87,7 @@ func (f Field) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	return f, tea.Batch(cmds...)
 }
 
-func (f Field) View() string {
+func (f Container) View() string {
 	viewers := f.GetViewersWithoutControls()
 	controls := f.GetControls()
 	elementViews := []string{}
@@ -162,33 +98,34 @@ func (f Field) View() string {
 	for _, control := range controls {
 		controlViews = append(controlViews, control.View())
 	}
-	return ui.FieldView(
+	return ui.ContainerView(
 		f.label,
 		append(
 			elementViews,
-			ui.FieldControlView(controlViews...),
+			ui.ContainerControlView(controlViews...),
 		)...,
 	)
 }
 
-func (f Field) AddElement(element component.Viewer) Field {
+func (f Container) AddElement(element component.Viewer) Container {
 	f.elements = append(f.elements, element)
 	f.FocusNext()
 	f.FocusPrev()
 	return f
 }
 
-func (f Field) GetViewersWithoutControls() []component.Viewer {
+func (f Container) GetViewersWithoutControls() []component.Viewer {
 	return f.elements[f.ncontrols:]
 }
 
-func (f Field) GetControls() []component.Viewer {
+func (f Container) GetControls() []component.Viewer {
 	return f.elements[:f.ncontrols]
 }
 
-func (f Field) GetFocusers() []component.Focuser {
+func (f Container) GetFocusers() []component.Focuser {
 	var focusers []component.Focuser
-	for _, element := range f.elements {
+	elements := append(f.GetViewersWithoutControls(), f.GetControls()...)
+	for _, element := range elements {
 		switch el := element.(type) {
 		case component.Focuser:
 			focusers = append(focusers, el)
@@ -197,7 +134,7 @@ func (f Field) GetFocusers() []component.Focuser {
 	return focusers
 }
 
-func (f *Field) FocusNext() {
+func (f *Container) FocusNext() {
 	focusers := f.GetFocusers()
 	for e, focuser := range focusers {
 		if focuser.Focused() {
@@ -216,7 +153,7 @@ func (f *Field) FocusNext() {
 	}
 }
 
-func (f *Field) FocusPrev() {
+func (f *Container) FocusPrev() {
 	focusers := f.GetFocusers()
 	for e, focuser := range focusers {
 		if focuser.Focused() {
@@ -235,7 +172,7 @@ func (f *Field) FocusPrev() {
 	}
 }
 
-func (f *Field) FocusLast() {
+func (f *Container) FocusLast() {
 	focusers := f.GetFocusers()
 	if len(focusers) > 0 {
 		for _, f := range focusers {
@@ -245,7 +182,7 @@ func (f *Field) FocusLast() {
 	}
 }
 
-func (f *Field) FocusFirst() {
+func (f *Container) FocusFirst() {
 	focusers := f.GetFocusers()
 	if len(focusers) > 0 {
 		for _, foc := range focusers {

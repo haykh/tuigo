@@ -6,6 +6,16 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 )
 
+type ComponentType = string
+
+const (
+	Container ComponentType = "container"
+	Button    ComponentType = "button"
+	Input     ComponentType = "input"
+	Radio     ComponentType = "radio"
+	Selector  ComponentType = "selector"
+)
+
 // button types
 type ButtonType int
 
