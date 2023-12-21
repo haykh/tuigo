@@ -1,6 +1,8 @@
 package app
 
 import (
+	"fmt"
+
 	"github.com/charmbracelet/bubbles/key"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/haykh/tuigo/debug"
@@ -35,6 +37,9 @@ func New(backend Backend, enable_debug bool) App {
 	dbg := debug.New()
 	if enable_debug {
 		dbg.Enable()
+	}
+	if _, ok := backend.Constructors[backend.States[0]]; !ok {
+		panic("No constructor for initial state")
 	}
 	return App{
 		activeState: backend.States[0],
@@ -135,6 +140,9 @@ func (a App) NextState() App {
 		}
 	}
 	currentContainer := a.containers[currentState]
+	if _, ok := a.backend.Constructors[newState]; !ok {
+		panic(fmt.Sprintf("No constructor for next state: %s", newState))
+	}
 	newContainer := a.backend.Constructors[newState](currentContainer)
 	is_first := false
 	is_last := (newState_idx == len(a.backend.States)-1)
@@ -162,7 +170,7 @@ func (a App) PrevState() App {
 		}
 	}
 	if newContainer, ok := a.containers[newState]; !ok {
-		panic("No container for prev state")
+		panic(fmt.Sprintf("No container for prev state: %s", newState))
 	} else {
 		a.activeState = newState
 		a.containers[newState] = newContainer.(obj.Collection).Focus()
