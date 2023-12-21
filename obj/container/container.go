@@ -196,7 +196,7 @@ func (c Container) FocusPrev() (obj.Collection, tea.Cmd) {
 					if cmd != nil {
 						switch cmd().(type) {
 						case utils.FocusPrevMsg:
-							if e > first_col_id {
+							if e > first_col_id+1 {
 								c.elements[e] = el.Blur()
 							}
 							focus_prev = true
