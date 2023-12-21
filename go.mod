@@ -2,6 +2,8 @@ module github.com/haykh/tuigo
 
 go 1.21.5
 
+retract v1.0.0
+
 require (
 	github.com/charmbracelet/bubbles v0.17.1
 	github.com/charmbracelet/bubbletea v0.25.0
