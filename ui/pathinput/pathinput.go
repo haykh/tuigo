@@ -15,8 +15,8 @@ var (
 	focusedPromptStyle   = promptStyle.Copy().Foreground(theme.ColorSpecial)
 )
 
-func View(ti textinput.Model) string {
-	if ti.Focused() {
+func View(focused bool, ti textinput.Model) string {
+	if focused {
 		ti.PromptStyle = focusedPromptStyle
 		ti.TextStyle = focusedStyle
 	} else {

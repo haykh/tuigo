@@ -4,11 +4,12 @@ import (
 	"github.com/charmbracelet/bubbles/textinput"
 	"github.com/haykh/tuigo/ui/app"
 	"github.com/haykh/tuigo/ui/button"
+	"github.com/haykh/tuigo/ui/container"
 	"github.com/haykh/tuigo/ui/debug"
-	"github.com/haykh/tuigo/ui/field"
 	"github.com/haykh/tuigo/ui/pathinput"
 	"github.com/haykh/tuigo/ui/radio"
 	"github.com/haykh/tuigo/ui/selector"
+	"github.com/haykh/tuigo/ui/text"
 	"github.com/haykh/tuigo/utils"
 )
 
@@ -18,12 +19,18 @@ func AppView(contents ...string) string {
 	return app.View(contents...)
 }
 
-func FieldView(label string, contents ...string) string {
-	return field.View(label, contents...)
+func ContainerView(focused bool, containerType utils.ContainerType, contents ...string) string {
+	if containerType == utils.SimpleContainer {
+		if len(contents) != 1 {
+			// contents = []string{"dummy"}
+			panic("SimpleContainer must have exactly one element")
+		}
+	}
+	return container.View(focused, containerType, contents...)
 }
 
-func FieldControlView(controls ...string) string {
-	return field.ControlView(controls...)
+func ContainerControlView(controls ...string) string {
+	return container.ControlView(controls...)
 }
 
 func DebugView(enabled bool, dbg string) string {
@@ -32,24 +39,28 @@ func DebugView(enabled bool, dbg string) string {
 
 // components
 
+func TextView(focused bool, txt string, texttype utils.TextType) string {
+	return text.View(focused, txt, texttype)
+}
+
 func SelectorView(
+	focused bool,
 	multiselect bool,
 	cursor int,
 	items []string,
 	selected, disabled map[string]struct{},
-	focused bool,
 ) string {
-	return selector.View(multiselect, cursor, items, selected, disabled, focused)
+	return selector.View(focused, multiselect, cursor, items, selected, disabled)
 }
 
-func ButtonView(label string, focused bool, btntype utils.ButtonType) string {
-	return button.View(label, focused, btntype)
+func ButtonView(focused bool, label string, btntype utils.ButtonType) string {
+	return button.View(focused, label, btntype)
 }
 
-func RadioView(label string, state, focused bool) string {
-	return radio.View(label, state, focused)
+func RadioView(focused bool, label string, state bool) string {
+	return radio.View(focused, label, state)
 }
 
-func PathInputView(ti textinput.Model) string {
-	return pathinput.View(ti)
+func PathInputView(focused bool, ti textinput.Model) string {
+	return pathinput.View(focused, ti)
 }

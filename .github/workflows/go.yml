@@ -6,7 +6,7 @@ on:
       - master
 
 jobs:
-  build:
+  obj:
     runs-on: ubuntu-latest
 
     steps:
@@ -20,4 +20,4 @@ jobs:
       - name: Build
         run: go build -v ./...
       - name: Test with the Go CLI
-        run: go test ./component/...
+        run: go test ./...

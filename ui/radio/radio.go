@@ -8,7 +8,7 @@ import (
 )
 
 var (
-	style         = lipgloss.NewStyle().MarginBottom(1).MarginLeft(2)
+	style         = theme.ElementStyle.Copy()
 	focusedStyle  = lipgloss.NewStyle().Underline(true)
 	unfocsedStyle = lipgloss.NewStyle().Foreground(theme.ColorDimmed)
 	stateOnStyle  = lipgloss.NewStyle().Foreground(theme.ColorSuccess)
@@ -20,7 +20,7 @@ var (
 	stateOff = " "
 )
 
-func View(label string, state, focused bool) string {
+func View(focused bool, label string, state bool) string {
 	var focusstyle lipgloss.Style
 	var stateview string
 	if focused {

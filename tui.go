@@ -1,274 +1,72 @@
 package tuigo
 
 import (
-	"fmt"
-
-	"github.com/charmbracelet/bubbles/key"
 	tea "github.com/charmbracelet/bubbletea"
-	"github.com/haykh/tuigo/component"
-	"github.com/haykh/tuigo/component/button"
-	"github.com/haykh/tuigo/component/input"
-	"github.com/haykh/tuigo/component/radio"
-	"github.com/haykh/tuigo/component/selector"
-	"github.com/haykh/tuigo/debug"
-	"github.com/haykh/tuigo/keys"
-	"github.com/haykh/tuigo/ui"
+	"github.com/haykh/tuigo/app"
+	"github.com/haykh/tuigo/obj"
+	"github.com/haykh/tuigo/obj/button"
+	"github.com/haykh/tuigo/obj/container"
+	"github.com/haykh/tuigo/obj/input"
+	"github.com/haykh/tuigo/obj/radio"
+	"github.com/haykh/tuigo/obj/selector"
+	"github.com/haykh/tuigo/obj/text"
 	"github.com/haykh/tuigo/utils"
 )
 
-type State interface {
-	Label() string
-	Next() State
-	Prev() State
+// aliases
+type AppState = app.AppState
+type Constructor = app.Constructor
+type Backend = app.Backend
+type Element = obj.Element
+type Collection = obj.Collection
+
+// constructors
+var App = app.New
+
+var TextWithID = text.New
+var RadioWithID = radio.New
+var InputWithID = input.New
+var ButtonWithID = button.New
+var SelectorWithID = selector.New
+
+var Container = container.New
+
+var Text = func(txt string, txttype TextType) Element {
+	return TextWithID(-1, txt, txttype)
+}
+var Radio = func(lbl string) Element {
+	return RadioWithID(-1, lbl)
+}
+var Input = func(lbl, def, plc string, inptype InputType) Element {
+	return InputWithID(-1, lbl, def, plc, inptype)
+}
+var Button = func(lbl string, btntype ButtonType, act tea.Msg) Element {
+	return ButtonWithID(-1, lbl, btntype, act)
+}
+var Selector = func(opt []string, mult bool) Element {
+	return SelectorWithID(-1, opt, mult)
 }
 
-type Actor interface {
-	Action() tea.Msg
-}
+// component types
+type ContainerType = utils.ContainerType
 
-type Messenger interface {
-	Message() string
-}
+var SimpleContainer = utils.SimpleContainer
+var VerticalContainer = utils.VerticalContainer
+var HorizontalContainer = utils.HorizontalContainer
 
-// App
+type ButtonType = utils.ButtonType
 
-type App struct {
-	state    utils.State
-	fields   map[utils.State]Field
-	debugger debug.Debugger
-}
+var SimpleBtn = utils.SimpleBtn
+var AcceptBtn = utils.AcceptBtn
+var ControlBtn = utils.ControlBtn
 
-func NewApp(state utils.State, fields map[utils.State]Field, enable_debug bool) App {
-	dbg := debug.New()
-	if enable_debug {
-		dbg.Enable()
-	}
-	mod := App{
-		state:    state,
-		fields:   fields,
-		debugger: dbg,
-	}
-	return mod
-}
+type InputType = utils.InputType
 
-func (m App) Init() tea.Cmd {
-	return nil
-}
+var PathInput = utils.PathInput
+var TextInput = utils.TextInput
 
-func (m App) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
-	switch msg := msg.(type) {
-	case tea.KeyMsg:
-		m.debugger.Log(msg.String())
-		switch {
-		case key.Matches(msg, keys.Keys.Quit):
-			return m, tea.Quit
-		}
-	case utils.NextStateMsg:
-		m.state = m.state.Next()
-		m.debugger.Log(fmt.Sprintf("state - %s", m.state.Label()))
-		return m, nil
-	case utils.PrevStateMsg:
-		m.state = m.state.Prev()
-		m.debugger.Log(fmt.Sprintf("state - %s", m.state.Label()))
-		return m, nil
-	case utils.DebugMsg:
-		m.debugger.Log(msg.String())
-	}
-	fld, cmd := m.fields[m.state].Update(msg)
-	m.fields[m.state] = fld.(Field)
-	return m, cmd
-}
+type TextType = utils.TextType
 
-func (m App) View() string {
-	fieldView := m.fields[m.state].View()
-	debugView := ui.DebugView(m.debugger.Enabled(), m.debugger.Get())
-	return ui.AppView(fieldView, debugView)
-}
-
-func (m App) AddField(st utils.State, f Field) App {
-	m.fields[st] = f
-	return m
-}
-
-// Field
-
-type Field struct {
-	elements  []component.Viewer
-	label     string
-	ncontrols int
-}
-
-func NewField(label string, isFirstField bool, isLastField bool) Field {
-	f := Field{
-		elements:  []component.Viewer{},
-		label:     label,
-		ncontrols: 0,
-	}
-	if !isFirstField {
-		f.ncontrols++
-		prev := button.New("< back", utils.ControlBtn, utils.PrevStateMsg{})
-		f = f.AddElement(&prev)
-	}
-	if !isLastField {
-		f.ncontrols++
-		next := button.New("next >", utils.ControlBtn, utils.NextStateMsg{})
-		f = f.AddElement(&next)
-	}
-	f.FocusLast()
-	return f
-}
-
-func (f Field) Init() tea.Cmd {
-	return nil
-}
-
-func (f Field) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
-	// process switching focus
-	switch msg := msg.(type) {
-	case tea.KeyMsg:
-		switch {
-		case key.Matches(msg, keys.Keys.Tab):
-			f.FocusNext()
-			return f, nil
-		case key.Matches(msg, keys.Keys.ShiftTab):
-			f.FocusPrev()
-			return f, nil
-		}
-	}
-
-	// process individual elements
-	var cmds []tea.Cmd
-	for e, element := range f.elements {
-		switch el := element.(type) {
-		case component.Updater:
-			if el.Focused() {
-				el, cmd := el.Update(msg)
-				f.elements[e] = el.(component.Viewer)
-				cmds = append(cmds, cmd)
-			}
-		}
-	}
-	return f, tea.Batch(cmds...)
-}
-
-func (f Field) View() string {
-	viewers := f.GetViewersWithoutControls()
-	controls := f.GetControls()
-	elementViews := []string{}
-	for _, element := range viewers {
-		elementViews = append(elementViews, element.View())
-	}
-	controlViews := []string{}
-	for _, control := range controls {
-		controlViews = append(controlViews, control.View())
-	}
-	return ui.FieldView(
-		f.label,
-		append(
-			elementViews,
-			ui.FieldControlView(controlViews...),
-		)...,
-	)
-}
-
-func (f Field) AddElement(element component.Viewer) Field {
-	f.elements = append(f.elements, element)
-	f.FocusNext()
-	f.FocusPrev()
-	return f
-}
-
-func (f Field) GetViewersWithoutControls() []component.Viewer {
-	return f.elements[f.ncontrols:]
-}
-
-func (f Field) GetControls() []component.Viewer {
-	return f.elements[:f.ncontrols]
-}
-
-func (f Field) GetFocusers() []component.Focuser {
-	var focusers []component.Focuser
-	for _, element := range f.elements {
-		switch el := element.(type) {
-		case component.Focuser:
-			focusers = append(focusers, el)
-		}
-	}
-	return focusers
-}
-
-func (f *Field) FocusNext() {
-	focusers := f.GetFocusers()
-	for e, focuser := range focusers {
-		if focuser.Focused() {
-			focuser.Blur()
-			if e+1 < len(focusers) {
-				focusers[e+1].Focus()
-				return
-			} else {
-				focusers[0].Focus()
-				return
-			}
-		}
-	}
-	if len(focusers) > 0 {
-		focusers[0].Focus()
-	}
-}
-
-func (f *Field) FocusPrev() {
-	focusers := f.GetFocusers()
-	for e, focuser := range focusers {
-		if focuser.Focused() {
-			focuser.Blur()
-			if e-1 >= 0 {
-				focusers[e-1].Focus()
-				return
-			} else {
-				focusers[len(focusers)-1].Focus()
-				return
-			}
-		}
-	}
-	if len(focusers) > 0 {
-		focusers[0].Focus()
-	}
-}
-
-func (f *Field) FocusLast() {
-	focusers := f.GetFocusers()
-	if len(focusers) > 0 {
-		for _, f := range focusers {
-			f.Blur()
-		}
-		focusers[len(focusers)-1].Focus()
-	}
-}
-
-func (f *Field) FocusFirst() {
-	focusers := f.GetFocusers()
-	if len(focusers) > 0 {
-		for _, foc := range focusers {
-			foc.Blur()
-		}
-		focusers[0].Focus()
-	}
-}
-
-// Components
-
-func NewRadio(label string) radio.Model {
-	return radio.New(label)
-}
-
-func NewInput(label, def, placeholder string, inputtype utils.InputType) input.Model {
-	return input.New(label, def, placeholder, inputtype)
-}
-
-func NewButton(label string, btnType utils.ButtonType, msg tea.Msg) button.Model {
-	return button.New(label, btnType, msg)
-}
-
-func NewSelector(options []string, multiselect bool) selector.Model {
-	return selector.New(options, multiselect)
-}
+var NormalText = utils.NormalText
+var LabelText = utils.LabelText
+var DimmedText = utils.DimmedText

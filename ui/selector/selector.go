@@ -8,7 +8,7 @@ import (
 )
 
 var (
-	style        = lipgloss.NewStyle().MarginBottom(1)
+	style        = theme.ElementStyle.Copy().MarginLeft(0)
 	focusedStyle = style.Copy()
 	noFocusStyle = style.Copy()
 
@@ -40,11 +40,11 @@ func itemUnfocusedRender(item string) string {
 }
 
 func View(
+	focused bool,
 	multiselect bool,
 	cursor int,
 	items []string,
 	selected, disabled map[string]struct{},
-	focused bool,
 ) string {
 	var itemViews []string
 	var focusstyle, textstyle lipgloss.Style
