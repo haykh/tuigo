@@ -12,5 +12,5 @@ var (
 
 var (
 	ElementStyle   = lipgloss.NewStyle().MarginLeft(2).MarginBottom(1)
-	ContainerStyle = lipgloss.NewStyle().PaddingRight(1).PaddingTop(1)
+	ContainerStyle = lipgloss.NewStyle().PaddingRight(1)
 )
