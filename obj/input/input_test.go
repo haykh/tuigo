@@ -18,8 +18,12 @@ func TestPathInput(t *testing.T) {
 			t.Fatalf("input did not set default value")
 		}
 		input.model.SetValue("test_dir")
-		if input.Value() != "test_dir" {
-			t.Fatalf("input did not set value")
+		if val, ok := input.Data().(string); ok {
+			if val != "test_dir" {
+				t.Fatalf("input did not set value")
+			}
+		} else {
+			t.Fatalf("input data is not string")
 		}
 		input.model.Reset()
 		if input.model.View() != "test<placeholder>" {

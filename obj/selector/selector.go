@@ -56,8 +56,6 @@ func (s Selector) View(focused bool) string {
 	return ui.SelectorView(focused, s.multiselect, s.cursor, s.options, s.selected, s.disabled)
 }
 
-// access
-
 func (s Selector) Disable(opt string) Selector {
 	s.disabled[opt] = struct{}{}
 	delete(s.selected, opt)
@@ -111,4 +109,8 @@ func (m Selector) Selected() []string {
 
 func (m Selector) Cursor() int {
 	return m.cursor
+}
+
+func (m Selector) Data() interface{} {
+	return m.Selected()
 }

@@ -17,15 +17,17 @@ var _ obj.Accessor = (*Button)(nil)
 
 type Button struct {
 	obj.ElementWithID
-	label   string
-	btntype utils.ButtonType
-	action  tea.Msg
+	label    string
+	npresses int
+	btntype  utils.ButtonType
+	action   tea.Msg
 }
 
 func New(id int, label string, btntype utils.ButtonType, action tea.Msg) obj.Element {
 	return container.NewSimpleContainer(true, Button{
 		ElementWithID: obj.NewElementWithID(id),
 		label:         label,
+		npresses:      0,
 		btntype:       btntype,
 		action:        action,
 	})
@@ -38,7 +40,8 @@ func (b Button) Update(msg tea.Msg) (obj.Element, tea.Cmd) {
 		switch {
 		case key.Matches(msg, keys.Keys.Space) || key.Matches(msg, keys.Keys.Enter):
 			cmds = append(cmds, utils.Callback(b.Action()))
-			cmds = append(cmds, utils.DebugCmd(fmt.Sprintf("%s called", b.label)))
+			cmds = append(cmds, utils.DebugCmd(fmt.Sprintf("%s called %d times", b.label, b.npresses)))
+			b.npresses++
 		}
 	}
 	return b, tea.Batch(cmds...)
@@ -50,4 +53,8 @@ func (b Button) View(focused bool) string {
 
 func (b Button) Action() tea.Msg {
 	return b.action
+}
+
+func (b Button) Data() interface{} {
+	return b.npresses
 }

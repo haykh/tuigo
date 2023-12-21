@@ -6,6 +6,7 @@ import (
 
 type Accessor interface {
 	ID() int
+	Data() interface{}
 }
 
 type Element interface {
@@ -25,6 +26,7 @@ type Collection interface {
 	Blur() Collection
 	FocusNext() (Collection, tea.Cmd)
 	FocusPrev() (Collection, tea.Cmd)
+	GetElementByID(int) Accessor
 }
 
 type ElementWithID struct {

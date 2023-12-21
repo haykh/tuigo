@@ -46,13 +46,11 @@ func (r Radio) View(focused bool) string {
 	return ui.RadioView(focused, r.label, r.state)
 }
 
-// access
-
 func (r Radio) Toggle() Radio {
 	r.state = !r.state
 	return r
 }
 
-func (r Radio) State() bool {
+func (r Radio) Data() interface{} {
 	return r.state
 }

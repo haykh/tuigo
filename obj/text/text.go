@@ -32,3 +32,7 @@ func (t Text) Update(msg tea.Msg) (obj.Element, tea.Cmd) {
 func (t Text) View(bool) string {
 	return ui.TextView(false, t.txt, t.texttype)
 }
+
+func (t Text) Data() interface{} {
+	return t.txt
+}

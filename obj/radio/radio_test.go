@@ -16,12 +16,20 @@ func TestRadio(t *testing.T) {
 	{
 		r1, _ := radio.Update(tea.KeyMsg{Type: tea.KeySpace})
 		radio = r1.(Radio)
-		if !radio.State() {
-			t.Fatalf("radio did not toggle on space")
+		if state, ok := radio.Data().(bool); ok {
+			if !state {
+				t.Fatalf("radio did not capture space key")
+			}
+		} else {
+			t.Fatalf("radio data is not bool")
 		}
 		radio = radio.Toggle()
-		if radio.State() {
-			t.Fatalf("radio did not toggle")
+		if state, ok := radio.Data().(bool); ok {
+			if state {
+				t.Fatalf("radio did not toggle")
+			}
+		} else {
+			t.Fatalf("radio data is not bool")
 		}
 	}
 }

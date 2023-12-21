@@ -82,6 +82,6 @@ func (ti TextInput) View(focused bool) string {
 	return ui.PathInputView(focused, ti.model)
 }
 
-func (ti TextInput) Value() string {
+func (ti TextInput) Data() interface{} {
 	return ti.model.Value()
 }

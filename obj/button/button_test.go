@@ -16,15 +16,26 @@ func TestButton(t *testing.T) {
 		action:  TestMsg{},
 	}
 	{
-		_, cmd := button.Update(tea.KeyMsg{Type: tea.KeySpace})
+		btn, cmd := button.Update(tea.KeyMsg{Type: tea.KeySpace})
 		if cmd == nil || !utils.CheckCmd(cmd, TestMsg{}) {
 			t.Fatalf("button did not capture space key")
 		}
+		button = btn.(Button)
 	}
 	{
-		_, cmd := button.Update(tea.KeyMsg{Type: tea.KeyEnter})
+		btn, cmd := button.Update(tea.KeyMsg{Type: tea.KeyEnter})
 		if cmd == nil || !utils.CheckCmd(cmd, TestMsg{}) {
 			t.Fatalf("button did not capture enter key")
+		}
+		button = btn.(Button)
+	}
+	{
+		if npresses, ok := button.Data().(int); ok {
+			if npresses != 2 {
+				t.Fatalf("button did not capture enter key")
+			}
+		} else {
+			t.Fatalf("button data is not int")
 		}
 	}
 }

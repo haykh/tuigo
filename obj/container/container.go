@@ -220,3 +220,18 @@ func (c Container) FocusPrev() (obj.Collection, tea.Cmd) {
 	}
 	return c, nil
 }
+
+func (c Container) GetElementByID(id int) obj.Accessor {
+	for _, element := range c.elements {
+		if el, ok := element.(obj.Accessor); ok {
+			if el.ID() == id {
+				return el
+			}
+		} else if el, ok := element.(obj.Collection); ok {
+			if el := el.GetElementByID(id); el != nil {
+				return el
+			}
+		}
+	}
+	return nil
+}
