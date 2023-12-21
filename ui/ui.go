@@ -22,6 +22,7 @@ func AppView(contents ...string) string {
 func ContainerView(focused bool, containerType utils.ContainerType, contents ...string) string {
 	if containerType == utils.SimpleContainer {
 		if len(contents) != 1 {
+			// contents = []string{"dummy"}
 			panic("SimpleContainer must have exactly one element")
 		}
 	}

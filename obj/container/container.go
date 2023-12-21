@@ -161,7 +161,7 @@ func (c Container) FocusNext() (obj.Collection, tea.Cmd) {
 							}
 							focus_next = true
 						case FocusChangedMsg:
-							return c, nil
+							return c, cmd
 						default:
 							panic("unknown cmd")
 						}

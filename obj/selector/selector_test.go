@@ -63,20 +63,21 @@ func TestSelector(t *testing.T) {
 			t.Fatalf("selector did not move cursor down")
 		}
 	}
-	{
-		newselector := Selector{
-			multiselect: false,
-			cursor:      0,
-			options:     []string{"option1", "option2", "option3"},
-			selected:    map[string]struct{}{},
-			disabled:    map[string]struct{}{},
-		}
-		newselector = newselector.Toggle()
-		newselector = newselector.Next()
-		newselector = newselector.Next()
-		newselector = newselector.Toggle()
-		if len(newselector.Selected()) != 1 || newselector.Selected()[0] != "option3" {
-			t.Fatalf("selector did not select option3 & deselect option1")
-		}
+}
+
+func TestSelectorToggle(t *testing.T) {
+	newselector := Selector{
+		multiselect: false,
+		cursor:      0,
+		options:     []string{"option1", "option2", "option3"},
+		selected:    map[string]struct{}{},
+		disabled:    map[string]struct{}{},
+	}
+	newselector = newselector.Toggle()
+	newselector = newselector.Next()
+	newselector = newselector.Next()
+	newselector = newselector.Toggle()
+	if len(newselector.Selected()) != 1 || newselector.Selected()[0] != "option3" {
+		t.Fatalf("selector did not select option3 & deselect option1")
 	}
 }

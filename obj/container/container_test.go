@@ -119,3 +119,44 @@ func TestContainer(t *testing.T) {
 		}
 	}
 }
+
+func TestContainerComplexFocus(t *testing.T) {
+	container := New(
+		true,
+		utils.VerticalContainer,
+		New(true, utils.VerticalContainer,
+			New(true, utils.HorizontalContainer,
+				New(false, utils.SimpleContainer),
+				New(true, utils.VerticalContainer,
+					New(true, utils.SimpleContainer),
+					New(true, utils.SimpleContainer),
+				),
+			),
+			New(false, utils.SimpleContainer),
+		),
+		New(true,
+			utils.HorizontalContainer,
+			New(false, utils.SimpleContainer),
+			New(false, utils.SimpleContainer),
+		),
+	).Focus().(Container)
+	newc, _ := container.FocusNext()
+	container = newc.(Container)
+	unfocused_container := container.
+		Elements()[0].(Container).
+		Elements()[0].(Container).
+		Elements()[1].(Container).
+		Elements()[0].(Container)
+	focused_container := container.
+		Elements()[0].(Container).
+		Elements()[0].(Container).
+		Elements()[1].(Container).
+		Elements()[1].(Container)
+
+	if unfocused_container.Focused() {
+		t.Errorf("expected container to be unfocused")
+	}
+	if !focused_container.Focused() {
+		t.Errorf("expected container to be focused")
+	}
+}
