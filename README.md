@@ -36,8 +36,8 @@ classDiagram
 
   class Backend["tuigo.Backend"]{
     States :: List~AppState~
-    Constructors :: Map[AppState]~Func[Element]->Element~
-    Finalizer :: Func[Map[AppState]~Element~]
+    Constructors :: Map[AppState]~Func[Collection]->Collection~
+    Finalizer :: Func[Map[AppState]~Collection~]
   }
 
   class NewApp["tuigo"] {

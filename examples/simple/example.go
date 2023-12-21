@@ -12,7 +12,7 @@ func main() {
 	backend := tuigo.Backend{
 		States: []tuigo.AppState{"initial", "final"},
 		Constructors: map[tuigo.AppState]tuigo.Constructor{
-			"initial": func(tuigo.Element) tuigo.Element {
+			"initial": func(tuigo.Collection) tuigo.Collection {
 				container1 := tuigo.Container(
 					true,
 					tuigo.VerticalContainer,
@@ -45,7 +45,7 @@ func main() {
 				)
 				return container
 			},
-			"final": func(prev tuigo.Element) tuigo.Element {
+			"final": func(prev tuigo.Collection) tuigo.Collection {
 				return tuigo.Container(
 					true,
 					tuigo.VerticalContainer,
@@ -55,7 +55,7 @@ func main() {
 				)
 			},
 		},
-		Finalizer: func(containers map[tuigo.AppState]tuigo.Element) {
+		Finalizer: func(containers map[tuigo.AppState]tuigo.Collection) {
 			fmt.Println("Finalizer Called")
 		},
 	}

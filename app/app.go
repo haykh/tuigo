@@ -14,20 +14,20 @@ import (
 	"github.com/haykh/tuigo/utils"
 )
 
-type Constructor = (func(obj.Element) obj.Element)
+type Constructor = (func(obj.Collection) obj.Collection)
 type AppState = string
 
 type Backend struct {
 	States       []AppState
 	Constructors map[AppState]Constructor
-	Finalizer    func(map[AppState]obj.Element)
+	Finalizer    func(map[AppState]obj.Collection)
 }
 
 type App struct {
 	activeState AppState
 	debugger    debug.Debugger
 	backend     Backend
-	containers  map[AppState]obj.Element
+	containers  map[AppState]obj.Collection
 }
 
 func New(backend Backend, enable_debug bool) App {
@@ -44,22 +44,18 @@ func New(backend Backend, enable_debug bool) App {
 	return App{
 		activeState: backend.States[0],
 		backend:     backend,
-		containers:  map[AppState]obj.Element{},
+		containers:  map[AppState]obj.Collection{},
 		debugger:    dbg,
 	}
 }
 
 func (a App) Init() tea.Cmd {
 	head_container := a.backend.Constructors[a.backend.States[0]](nil)
-	if head, ok := head_container.(obj.Collection); ok {
-		is_first := true
-		is_last := len(a.backend.States) == 1
-		head_container = head.AddElements(a.GenerateControls(is_first, is_last))
-	} else {
-		panic("Head container must be a collection")
-	}
+	is_first := true
+	is_last := len(a.backend.States) == 1
+	head_container = head_container.AddElements(a.GenerateControls(is_first, is_last))
 	a.containers[a.activeState] = head_container
-	a.containers[a.activeState] = a.containers[a.activeState].(obj.Collection).Focus()
+	a.containers[a.activeState] = a.containers[a.activeState].Focus()
 	return nil
 }
 
@@ -71,15 +67,15 @@ func (a App) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return a, tea.Quit
 		case key.Matches(msg, keys.Keys.Tab):
 			cont, cmd := a.containers[a.activeState].Update(utils.FocusNextMsg{})
-			a.containers[a.activeState] = cont
+			a.containers[a.activeState] = cont.(obj.Collection)
 			return a, cmd
 		case key.Matches(msg, keys.Keys.ShiftTab):
 			cont, cmd := a.containers[a.activeState].Update(utils.FocusPrevMsg{})
-			a.containers[a.activeState] = cont
+			a.containers[a.activeState] = cont.(obj.Collection)
 			return a, cmd
 		default:
 			cont, cmd := a.containers[a.activeState].Update(msg)
-			a.containers[a.activeState] = cont
+			a.containers[a.activeState] = cont.(obj.Collection)
 			return a, cmd
 		}
 	case utils.SubmitMsg:
@@ -105,7 +101,7 @@ func (a App) View() string {
 	return ui.AppView(containerView, debugView)
 }
 
-func (a App) GenerateControls(isFirst, isLast bool) obj.Element {
+func (a App) GenerateControls(isFirst, isLast bool) obj.Collection {
 	controls := []obj.Element{}
 	prevbtn := button.New(-100, "< prev", utils.ControlBtn, utils.PrevStateMsg{})
 	nextbtn := button.New(-200, "next >", utils.ControlBtn, utils.NextStateMsg{})
@@ -146,13 +142,9 @@ func (a App) NextState() App {
 	newContainer := a.backend.Constructors[newState](currentContainer)
 	is_first := false
 	is_last := (newState_idx == len(a.backend.States)-1)
-	if head, ok := newContainer.(obj.Collection); ok {
-		newContainer = head.AddElements(a.GenerateControls(is_first, is_last))
-	} else {
-		panic("New container must be a collection")
-	}
+	newContainer = newContainer.AddElements(a.GenerateControls(is_first, is_last))
 	a.activeState = newState
-	a.containers[newState] = newContainer.(obj.Collection).Focus()
+	a.containers[newState] = newContainer.Focus()
 	return a
 }
 
@@ -173,7 +165,7 @@ func (a App) PrevState() App {
 		panic(fmt.Sprintf("No container for prev state: %s", newState))
 	} else {
 		a.activeState = newState
-		a.containers[newState] = newContainer.(obj.Collection).Focus()
+		a.containers[newState] = newContainer.Focus()
 		return a
 	}
 }

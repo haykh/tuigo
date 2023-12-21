@@ -18,6 +18,7 @@ type AppState = app.AppState
 type Constructor = app.Constructor
 type Backend = app.Backend
 type Element = obj.Element
+type Collection = obj.Collection
 
 // constructors
 var App = app.New
