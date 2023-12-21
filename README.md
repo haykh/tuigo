@@ -1,6 +1,8 @@
 # `tuigo` 
 
-## a terminal UI framework written in Go using the `bubbletea` library.
+a terminal UI framework written in Go using the `bubbletea` library.
+
+![order](examples/order.gif)
 
 ### building an application
 
@@ -54,6 +56,111 @@ classDiagram
   tuigo --o Backend
   NewApp --o tea
   Backend --o NewApp
+```
+### elements
+
+```mermaid
+%%{
+  init: {
+    'theme': 'base',
+    'themeVariables': {
+        'fontFamily': 'JetBrainsMono Nerd Font, BlexMono Nerd Font, Roboto Mono, Source Code Pro, monospace',
+        'primaryColor': '#4C2FAD',
+        'primaryTextColor': '#FFFFFF',
+        'lineColor': '#E840E0',
+        'primaryBorderColor': '#E840E0'
+      }
+    }
+}%%
+classDiagram
+  class Accessor {
+    <<interface>>
+    ID() int
+    Data() interface~~
+  }
+  class Element {
+    <<interface>>
+    View(bool) string
+    Update(tea.Msg) (Element, tea.Cmd)
+  }
+  class Collection {
+    <<interface>>
+    Elements() []Element
+    AddElements(...Element) Collection
+    Focusable() bool
+    Focused() bool
+    Focus() Collection
+    FocusFromStart() Collection
+    FocusFromEnd() Collection
+    Blur() Collection
+    FocusNext() (Collection, tea.Cmd)
+    FocusPrev() (Collection, tea.Cmd)
+    GetElementByID(int) Accessor
+  }
+
+  class Button {
+    -string label
+    -npresses int
+    -ButtonType btntype
+    -tea.Msg action
+    +Data() -> Button::npresses
+  }
+
+  class TextInput {
+    -InputType inputtype
+    -textinput.Model model    
+    +Data() -> TextInput::model.Value -> string
+  }
+
+  class Radio {
+	  -string label
+	  -bool state
+    +Toggle() -> Radio
+    +Data() -> Radio::state
+  }
+
+  class Selector {
+    -bool multiselect
+    -int cursor
+    -List~string~ options
+    -Map~string~ selected
+    -Map~string~ disabled
+    +Disable(string) -> Selector
+    +Enable(string) -> Selector
+    +Toggle(string) -> Selector
+    +Next() -> Selector
+    +Prev() -> Selector
+    +Selected() -> List~string~
+    +Cursor() -> int
+    +Data() -> Selector::Selected -> List~string~
+  }
+
+  class Text {
+    -string text
+    -TextType texttype
+    +Data() -> Text::text
+  }
+
+  class Container {
+    -bool focusable
+    -bool focused
+    -ContainerType conttype
+    -List~Element~ elements
+    -Func[Container] -> string render
+  }
+
+  Element <|-- Button
+  Accessor <|-- Button
+  Element <|-- TextInput
+  Accessor <|-- TextInput
+  Element <|-- Radio
+  Accessor <|-- Radio
+  Element <|-- Selector
+  Accessor <|-- Selector
+  Element <|-- Text
+  Accessor <|-- Text
+  Element <|-- Container
+  Collection <|-- Container
 ```
 
 ## TODO

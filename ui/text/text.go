@@ -8,7 +8,7 @@ import (
 var (
 	style       = theme.ElementStyle.Copy()
 	normalStyle = style.Copy()
-	labelStyle  = style.Copy().Background(theme.ColorLight).Padding(0, 1)
+	labelStyle  = style.Copy().Foreground(theme.ColorAccent).Padding(0, 1)
 	dimmedStyle = style.Copy().Foreground(theme.ColorDimmed)
 )
 
