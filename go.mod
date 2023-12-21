@@ -2,7 +2,12 @@ module github.com/haykh/tuigo
 
 go 1.21.5
 
-retract v1.0.0
+retract (
+  v0.1.0 // pre-release
+  v0.1.1 // wrong retraction
+	v1.0.0 // premature release
+  v1.0.1 // retraction of all the above
+)
 
 require (
 	github.com/charmbracelet/bubbles v0.17.1
