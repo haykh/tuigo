@@ -76,7 +76,7 @@ classDiagram
   class Accessor {
     <<interface>>
     ID() int
-    Data() interface~~
+    Data() interface<>
   }
   class Element {
     <<interface>>
