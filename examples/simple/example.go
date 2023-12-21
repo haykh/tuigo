@@ -6,57 +6,54 @@ import (
 
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/haykh/tuigo"
-	"github.com/haykh/tuigo/app"
-	"github.com/haykh/tuigo/obj"
-	"github.com/haykh/tuigo/utils"
 )
 
 func main() {
-	backend := app.Backend{
-		States: []app.AppState{"initial", "final"},
-		Constructors: map[app.AppState]app.Constructor{
-			"initial": func(obj.Element) obj.Element {
+	backend := tuigo.Backend{
+		States: []tuigo.AppState{"initial", "final"},
+		Constructors: map[tuigo.AppState]tuigo.Constructor{
+			"initial": func(tuigo.Element) tuigo.Element {
 				container1 := tuigo.NewContainer(
 					true,
-					utils.VerticalContainer,
-					tuigo.NewButton("button1", utils.SimpleBtn, nil),
+					tuigo.VerticalContainer,
+					tuigo.NewButton("button1", tuigo.SimpleBtn, nil),
 					tuigo.NewRadio("radio1"),
-					tuigo.NewText("label1", utils.NormalText),
-					tuigo.NewInput("input2", "<default>", "<placeholder>", utils.PathInput),
+					tuigo.NewText("label1", tuigo.NormalText),
+					tuigo.NewInput("input2", "<default>", "<placeholder>", tuigo.PathInput),
 				)
 
 				container2 := tuigo.NewContainer(
 					true,
-					utils.VerticalContainer,
-					tuigo.NewText("text2", utils.DimmedText),
-					tuigo.NewButton("button4", utils.SimpleBtn, nil),
+					tuigo.VerticalContainer,
+					tuigo.NewText("text2", tuigo.DimmedText),
+					tuigo.NewButton("button4", tuigo.SimpleBtn, nil),
 					tuigo.NewSelector([]string{"item1", "item2", "item3", "item4", "item5"}, false),
 				)
 
-				container3 := tuigo.NewContainer(true, utils.HorizontalContainer, container1, container2)
+				container3 := tuigo.NewContainer(true, tuigo.HorizontalContainer, container1, container2)
 
 				container := tuigo.NewContainer(
 					true,
-					utils.VerticalContainer,
-					tuigo.NewButton("button6", utils.SimpleBtn, nil),
+					tuigo.VerticalContainer,
+					tuigo.NewButton("button6", tuigo.SimpleBtn, nil),
 					tuigo.NewSelector([]string{"item1", "item2", "item3"}, true),
-					tuigo.NewInput("input1", "<default>", "<placeholder>", utils.TextInput),
-					tuigo.NewButton("button9", utils.AcceptBtn, nil),
+					tuigo.NewInput("input1", "<default>", "<placeholder>", tuigo.TextInput),
+					tuigo.NewButton("button9", tuigo.AcceptBtn, nil),
 					container3,
 				)
 				return container
 			},
-			"final": func(prev obj.Element) obj.Element {
+			"final": func(prev tuigo.Element) tuigo.Element {
 				return tuigo.NewContainer(
 					true,
-					utils.VerticalContainer,
-					tuigo.NewButton("button9", utils.SimpleBtn, nil),
-					tuigo.NewInput("input3", "<default>", "<placeholder>", utils.TextInput),
+					tuigo.VerticalContainer,
+					tuigo.NewButton("button9", tuigo.SimpleBtn, nil),
+					tuigo.NewInput("input3", "<default>", "<placeholder>", tuigo.TextInput),
 					tuigo.NewRadio("radio2"),
 				)
 			},
 		},
-		Finalizer: func(containers map[app.AppState]obj.Element) {
+		Finalizer: func(containers map[tuigo.AppState]tuigo.Element) {
 			fmt.Println("Finalizer Called")
 		},
 	}

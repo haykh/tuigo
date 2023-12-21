@@ -24,17 +24,6 @@ const (
 	DimmedText
 )
 
-// item types
-type ItemType = string
-
-const (
-	Container ItemType = "container"
-	Button    ItemType = "button"
-	Input     ItemType = "input"
-	Radio     ItemType = "radio"
-	Selector  ItemType = "selector"
-)
-
 // button types
 type ButtonType int
 

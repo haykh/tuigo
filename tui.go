@@ -1,7 +1,6 @@
 package tuigo
 
 import (
-	tea "github.com/charmbracelet/bubbletea"
 	"github.com/haykh/tuigo/app"
 	"github.com/haykh/tuigo/obj"
 	"github.com/haykh/tuigo/obj/button"
@@ -13,36 +12,42 @@ import (
 	"github.com/haykh/tuigo/utils"
 )
 
-//	func NewApp(container obj.Element, enable_debug bool) app.App {
-//		return app.New(container, enable_debug)
-//	}
+// aliases
+type AppState = app.AppState
+type Constructor = app.Constructor
+type Backend = app.Backend
+type Element = obj.Element
 
-func NewApp(backend app.Backend, enable_debug bool) app.App {
-	return app.New(backend, enable_debug)
-}
+// constructors
+var NewApp = app.New
 
-// Components
+var NewContainer = container.New
+var NewText = text.New
+var NewRadio = radio.New
+var NewInput = input.New
+var NewButton = button.New
+var NewSelector = selector.New
 
-func NewContainer(focusable bool, containerType utils.ContainerType, elements ...obj.Element) obj.Element {
-	return container.New(focusable, containerType, elements...)
-}
+// component types
+type ContainerType = utils.ContainerType
 
-func NewText(txt string, texttype utils.TextType) obj.Element {
-	return text.New(txt, texttype)
-}
+var SimpleContainer = utils.SimpleContainer
+var VerticalContainer = utils.VerticalContainer
+var HorizontalContainer = utils.HorizontalContainer
 
-func NewRadio(label string) obj.Element {
-	return radio.New(label)
-}
+type ButtonType = utils.ButtonType
 
-func NewInput(label, def, placeholder string, inputtype utils.InputType) obj.Element {
-	return input.New(label, def, placeholder, inputtype)
-}
+var SimpleBtn = utils.SimpleBtn
+var AcceptBtn = utils.AcceptBtn
+var ControlBtn = utils.ControlBtn
 
-func NewButton(label string, btnType utils.ButtonType, msg tea.Msg) obj.Element {
-	return button.New(label, btnType, msg)
-}
+type InputType = utils.InputType
 
-func NewSelector(options []string, multiselect bool) obj.Element {
-	return selector.New(options, multiselect)
-}
+var PathInput = utils.PathInput
+var TextInput = utils.TextInput
+
+type TextType = utils.TextType
+
+var NormalText = utils.NormalText
+var LabelText = utils.LabelText
+var DimmedText = utils.DimmedText
