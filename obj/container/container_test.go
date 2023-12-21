@@ -10,7 +10,7 @@ import (
 type TestMsg struct{}
 
 func TestContainer(t *testing.T) {
-	container := NewContainer(true, utils.SimpleContainer)
+	container := New(true, utils.SimpleContainer)
 	{
 		container = container.Focus().(Container)
 		if !container.Focused() {
@@ -21,7 +21,7 @@ func TestContainer(t *testing.T) {
 			t.Errorf("expected container to be unfocused")
 		}
 	}
-	container.elements = append(container.elements, NewContainer(true, utils.SimpleContainer))
+	container.elements = append(container.elements, New(true, utils.SimpleContainer))
 	{
 		container = container.Focus().(Container)
 		subcontainer := container.Containers()[0].(Container)
@@ -34,7 +34,7 @@ func TestContainer(t *testing.T) {
 			t.Errorf("expected subcontainer to be unfocused")
 		}
 	}
-	container.elements = append(container.elements, NewContainer(true, utils.SimpleContainer))
+	container.elements = append(container.elements, New(true, utils.SimpleContainer))
 	{
 		container = container.Focus().(Container)
 		subcontainer0 := container.Containers()[0].(Container)

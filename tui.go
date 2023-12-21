@@ -3,7 +3,6 @@ package tuigo
 import (
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/haykh/tuigo/app"
-	"github.com/haykh/tuigo/debug"
 	"github.com/haykh/tuigo/obj"
 	"github.com/haykh/tuigo/obj/button"
 	"github.com/haykh/tuigo/obj/container"
@@ -14,22 +13,18 @@ import (
 	"github.com/haykh/tuigo/utils"
 )
 
-func NewApp(container obj.Element, enable_debug bool) app.App {
-	dbg := debug.New()
-	if enable_debug {
-		dbg.Enable()
-	}
-	app := app.App{
-		Container: container.(obj.Collection).Focus(),
-		Debugger:  dbg,
-	}
-	return app
+//	func NewApp(container obj.Element, enable_debug bool) app.App {
+//		return app.New(container, enable_debug)
+//	}
+
+func NewApp(backend app.Backend, enable_debug bool) app.App {
+	return app.New(backend, enable_debug)
 }
 
 // Components
 
 func NewContainer(focusable bool, containerType utils.ContainerType, elements ...obj.Element) obj.Element {
-	return container.NewContainer(focusable, containerType, elements...)
+	return container.New(focusable, containerType, elements...)
 }
 
 func NewText(txt string, texttype utils.TextType) obj.Element {

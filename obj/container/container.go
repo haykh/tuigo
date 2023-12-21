@@ -19,10 +19,10 @@ type Container struct {
 }
 
 func NewSimpleContainer(focusable bool, elements ...obj.Element) Container {
-	return NewContainer(focusable, utils.SimpleContainer, elements...)
+	return New(focusable, utils.SimpleContainer, elements...)
 }
 
-func NewContainer(focusable bool, containerType utils.ContainerType, elements ...obj.Element) Container {
+func New(focusable bool, containerType utils.ContainerType, elements ...obj.Element) Container {
 	render := func(self Container) string {
 		el_views := []string{}
 		for _, element := range self.elements {
