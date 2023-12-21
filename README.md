@@ -51,7 +51,6 @@ classDiagram
   tuigo_pkg --o Backend
   NewApp --o tea_pkg
   Backend --o NewApp
-end
 ```
 
 ## TODO
