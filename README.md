@@ -19,39 +19,38 @@ see [`example/`](example/) for an example usage of `tuigo`. the scheme below sho
 }%%
 
 classDiagram
-  namespace tuigo {
-    class tuigo_pkg[" "] {
-      NewContainer :: Func[bool, ContainerType, ...Element] -> Element
-      NewButton :: Func[string, ButtonType, Msg] -> Element
-      NewSelector :: Func[List~string~] -> Element
-      NewInput :: Func[string, string, string, InputType] -> Element
-      NewRadio :: Func[string] -> Element
-    }
+  class tuigo {
+    <<package>>
+    NewContainer :: Func[bool, ContainerType, ...Element] -> Element
+    NewButton :: Func[string, ButtonType, Msg] -> Element
+    NewSelector :: Func[List~string~] -> Element
+    NewInput :: Func[string, string, string, InputType] -> Element
+    NewRadio :: Func[string] -> Element
   }
-  
-  namespace app {
-    class Backend["Backend"]{
-      States :: List~AppState~
-      Constructors :: Map[AppState]~Func[Element] -> Element~
-      Finalizer :: Func[Map[AppState]~Element~]
-    }
 
-    class NewApp[" "] {
-      NewApp :: Func[Backend, bool] -> App
-    }
+  class Backend["app.Backend"]{
+    States :: List~AppState~
+    Constructors :: Map[AppState]~Func[Element]->Element~
+    Finalizer :: Func[Map[AppState]~Element~]
+  }
+
+  class NewApp["tuigo"] {
+    <<package>>
+    NewApp :: Func[Backend, bool] -> App
   }
   note for Backend "AppState = string"
 
-  namespace tea {
-    class tea_pkg[" "] {
-      NewProgram :: Func[Model, ...ProgramOption] -> *Program
-    }
+  class tea["tea 'github.com/charmbracelet/bubbletea'"] {
+    <<package>>
+    NewProgram :: Func[Model, ...ProgramOption] -> *Program
   }
 
-  tuigo_pkg --o Backend
-  NewApp --o tea_pkg
+  tuigo --o Backend
+  NewApp --o tea
   Backend --o NewApp
+
 ```
+
 
 ## TODO
 
