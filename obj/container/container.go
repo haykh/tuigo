@@ -43,8 +43,13 @@ func (c Container) View(bool) string {
 	return c.render(c)
 }
 
-func (c Container) Containers() []obj.Element {
+func (c Container) Elements() []obj.Element {
 	return c.elements
+}
+
+func (c Container) AddElements(elements ...obj.Element) obj.Collection {
+	c.elements = append(c.elements, elements...)
+	return c
 }
 
 func (c Container) Update(msg tea.Msg) (obj.Element, tea.Cmd) {

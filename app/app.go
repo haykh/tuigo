@@ -6,6 +6,8 @@ import (
 	"github.com/haykh/tuigo/debug"
 	"github.com/haykh/tuigo/keys"
 	"github.com/haykh/tuigo/obj"
+	"github.com/haykh/tuigo/obj/button"
+	"github.com/haykh/tuigo/obj/container"
 	"github.com/haykh/tuigo/ui"
 	"github.com/haykh/tuigo/utils"
 )
@@ -36,15 +38,19 @@ func New(backend Backend, enable_debug bool) App {
 	return App{
 		activeState: backend.States[0],
 		backend:     backend,
-		containers: map[AppState]obj.Element{
-			backend.States[0]: backend.Constructors[backend.States[0]](nil),
-		},
-		debugger: dbg,
+		containers:  map[AppState]obj.Element{},
+		debugger:    dbg,
 	}
 }
 
 func (a App) Init() tea.Cmd {
-	a.containers[a.activeState] = a.backend.Constructors[a.activeState](nil)
+	head_container := a.backend.Constructors[a.backend.States[0]](nil)
+	if head, ok := head_container.(obj.Collection); ok {
+		head_container = head.AddElements(a.GenerateControls(true, false))
+	} else {
+		panic("Head container must be a collection")
+	}
+	a.containers[a.activeState] = head_container
 	a.containers[a.activeState] = a.containers[a.activeState].(obj.Collection).Focus()
 	return nil
 }
@@ -80,5 +86,28 @@ func (a App) View() string {
 	return ui.AppView(containerView, debugView)
 }
 
-func (a *App) Next() {
+func (a App) GenerateControls(isFirst, isLast bool) obj.Collection {
+	var controls obj.Collection
+	prevbtn := button.New("< prev", utils.ControlBtn, utils.PrevStateMsg{})
+	nextbtn := button.New("next >", utils.ControlBtn, utils.NextStateMsg{})
+	if isFirst {
+		controls = container.New(true,
+			utils.HorizontalContainer,
+			nextbtn,
+		)
+	} else if isLast {
+		controls = container.New(true,
+			utils.HorizontalContainer,
+			prevbtn,
+		)
+	} else {
+		controls = container.New(true,
+			utils.HorizontalContainer,
+			prevbtn,
+			nextbtn,
+		)
+	}
+	return controls
 }
+
+func (a *App) Next() {}

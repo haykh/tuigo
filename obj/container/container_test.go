@@ -24,12 +24,12 @@ func TestContainer(t *testing.T) {
 	container.elements = append(container.elements, New(true, utils.SimpleContainer))
 	{
 		container = container.Focus().(Container)
-		subcontainer := container.Containers()[0].(Container)
+		subcontainer := container.Elements()[0].(Container)
 		if !subcontainer.Focused() {
 			t.Errorf("expected subcontainer to be focused")
 		}
 		container = container.Blur().(Container)
-		subcontainer = container.Containers()[0].(Container)
+		subcontainer = container.Elements()[0].(Container)
 		if subcontainer.Focused() {
 			t.Errorf("expected subcontainer to be unfocused")
 		}
@@ -37,14 +37,14 @@ func TestContainer(t *testing.T) {
 	container.elements = append(container.elements, New(true, utils.SimpleContainer))
 	{
 		container = container.Focus().(Container)
-		subcontainer0 := container.Containers()[0].(Container)
+		subcontainer0 := container.Elements()[0].(Container)
 		if !subcontainer0.Focused() {
 			t.Errorf("expected subcontainer #0 to be focused")
 		}
 		newc, _ := container.FocusNext()
 		container = newc.(Container)
-		subcontainer0 = container.Containers()[0].(Container)
-		subcontainer1 := container.Containers()[1].(Container)
+		subcontainer0 = container.Elements()[0].(Container)
+		subcontainer1 := container.Elements()[1].(Container)
 		if !subcontainer1.Focused() {
 			t.Errorf("expected subcontainer #1 to be focused")
 		}
@@ -53,8 +53,8 @@ func TestContainer(t *testing.T) {
 		}
 		newc, _ = container.FocusPrev()
 		container = newc.(Container)
-		subcontainer0 = container.Containers()[0].(Container)
-		subcontainer1 = container.Containers()[1].(Container)
+		subcontainer0 = container.Elements()[0].(Container)
+		subcontainer1 = container.Elements()[1].(Container)
 		if !subcontainer0.Focused() {
 			t.Errorf("expected subcontainer #0 to be focused")
 		}
@@ -82,8 +82,8 @@ func TestContainer(t *testing.T) {
 		if !correct {
 			t.Errorf("expected cmd to be FocusNextMsg")
 		}
-		component0 := container.Containers()[0].(Container)
-		component1 := container.Containers()[1].(Container)
+		component0 := container.Elements()[0].(Container)
+		component1 := container.Elements()[1].(Container)
 		if component0.Focused() {
 			t.Errorf("expected component #0 to be unfocused")
 		}
@@ -95,8 +95,8 @@ func TestContainer(t *testing.T) {
 	{
 		newc := container.Focus()
 		container = newc.(Container)
-		component0 := container.Containers()[0].(Container)
-		component1 := container.Containers()[1].(Container)
+		component0 := container.Elements()[0].(Container)
+		component1 := container.Elements()[1].(Container)
 		if !component0.Focused() {
 			t.Errorf("expected component #0 to be focused")
 		}

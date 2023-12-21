@@ -11,7 +11,8 @@ type Element interface {
 
 type Collection interface {
 	Element
-	Containers() []Element
+	Elements() []Element
+	AddElements(...Element) Collection
 	Focusable() bool
 	Focused() bool
 	Focus() Collection
