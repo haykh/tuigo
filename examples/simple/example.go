@@ -55,8 +55,11 @@ func main() {
 				)
 			},
 		},
-		Finalizer: func(containers map[tuigo.AppState]tuigo.Collection) {
-			fmt.Println("Finalizer Called")
+		Finalizer: func(containers map[tuigo.AppState]tuigo.Collection) tuigo.Collection {
+			return tuigo.Container(
+				false, tuigo.VerticalContainer,
+				tuigo.Text("app finalized", tuigo.NormalText),
+			)
 		},
 	}
 	p := tea.NewProgram(tuigo.App(backend, true))

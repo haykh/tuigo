@@ -112,5 +112,9 @@ func (m Selector) Cursor() int {
 }
 
 func (m Selector) Data() interface{} {
-	return m.Selected()
+	if m.multiselect {
+		return m.Selected()
+	} else {
+		return m.Selected()[0]
+	}
 }

@@ -20,7 +20,7 @@ type AppState = string
 type Backend struct {
 	States       []AppState
 	Constructors map[AppState]Constructor
-	Finalizer    func(map[AppState]obj.Collection)
+	Finalizer    func(map[AppState]obj.Collection) obj.Collection
 }
 
 type App struct {
@@ -84,7 +84,8 @@ func (a App) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		}
 	case utils.SubmitMsg:
 		a.debugger.Log("Submit")
-		a.backend.Finalizer(a.containers)
+		a.activeState = "FINAL"
+		a.containers[a.activeState] = a.backend.Finalizer(a.containers)
 		return a, tea.Quit
 	case utils.NextStateMsg:
 		a.debugger.Log("Next")

@@ -8,7 +8,7 @@ import (
 
 var (
 	style          = theme.ContainerStyle.Copy()
-	focusedStyle   = style.Copy()
+	focusedStyle   = style.Copy() //.Border(lipgloss.NormalBorder())
 	unfocusedStyle = style.Copy()
 )
 
@@ -26,7 +26,7 @@ func View(focused bool, containerType utils.ContainerType, contents ...string) s
 		))
 	} else {
 		return focus_style.Render(lipgloss.JoinHorizontal(
-			lipgloss.Top,
+			lipgloss.Center,
 			contents...,
 		))
 	}
