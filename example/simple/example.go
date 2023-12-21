@@ -13,7 +13,7 @@ import (
 
 func main() {
 	backend := app.Backend{
-		States: []app.AppState{"initial"},
+		States: []app.AppState{"initial", "final"},
 		Constructors: map[app.AppState]app.Constructor{
 			"initial": func(obj.Element) obj.Element {
 				container1 := tuigo.NewContainer(
@@ -46,6 +46,18 @@ func main() {
 				)
 				return container
 			},
+			"final": func(prev obj.Element) obj.Element {
+				return tuigo.NewContainer(
+					true,
+					utils.VerticalContainer,
+					tuigo.NewButton("button9", utils.SimpleBtn, nil),
+					tuigo.NewInput("input3", "<default>", "<placeholder>", utils.TextInput),
+					tuigo.NewRadio("radio2"),
+				)
+			},
+		},
+		Finalizer: func(containers map[app.AppState]obj.Element) {
+			fmt.Println("Finalizer Called")
 		},
 	}
 	p := tea.NewProgram(tuigo.NewApp(backend, true))

@@ -18,6 +18,7 @@ type AppState = string
 type Backend struct {
 	States       []AppState
 	Constructors map[AppState]Constructor
+	Finalizer    func(map[AppState]obj.Element)
 }
 
 type App struct {
@@ -46,7 +47,9 @@ func New(backend Backend, enable_debug bool) App {
 func (a App) Init() tea.Cmd {
 	head_container := a.backend.Constructors[a.backend.States[0]](nil)
 	if head, ok := head_container.(obj.Collection); ok {
-		head_container = head.AddElements(a.GenerateControls(true, false))
+		is_first := true
+		is_last := len(a.backend.States) == 1
+		head_container = head.AddElements(a.GenerateControls(is_first, is_last))
 	} else {
 		panic("Head container must be a collection")
 	}
@@ -74,8 +77,19 @@ func (a App) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			a.containers[a.activeState] = cont
 			return a, cmd
 		}
+	case utils.SubmitMsg:
+		a.debugger.Log("Submit")
+		a.backend.Finalizer(a.containers)
+		return a, tea.Quit
+	case utils.NextStateMsg:
+		a.debugger.Log("Next")
+		return a.NextState(), nil
+	case utils.PrevStateMsg:
+		a.debugger.Log("Prev")
+		return a.PrevState(), nil
 	case utils.DebugMsg:
 		a.debugger.Log(msg.String())
+		return a, nil
 	}
 	return a, nil
 }
@@ -86,28 +100,72 @@ func (a App) View() string {
 	return ui.AppView(containerView, debugView)
 }
 
-func (a App) GenerateControls(isFirst, isLast bool) obj.Collection {
-	var controls obj.Collection
+func (a App) GenerateControls(isFirst, isLast bool) obj.Element {
+	controls := []obj.Element{}
 	prevbtn := button.New("< prev", utils.ControlBtn, utils.PrevStateMsg{})
 	nextbtn := button.New("next >", utils.ControlBtn, utils.NextStateMsg{})
-	if isFirst {
-		controls = container.New(true,
-			utils.HorizontalContainer,
-			nextbtn,
-		)
-	} else if isLast {
-		controls = container.New(true,
-			utils.HorizontalContainer,
-			prevbtn,
-		)
-	} else {
-		controls = container.New(true,
-			utils.HorizontalContainer,
-			prevbtn,
-			nextbtn,
-		)
+	submitbtn := button.New("submit", utils.ControlBtn, utils.SubmitMsg{})
+	if !isFirst {
+		controls = append(controls, prevbtn)
 	}
-	return controls
+	if !isLast {
+		controls = append(controls, nextbtn)
+	} else {
+		controls = append(controls, submitbtn)
+	}
+	return container.New(true,
+		utils.HorizontalContainer,
+		controls...,
+	)
 }
 
-func (a *App) Next() {}
+func (a App) NextState() App {
+	currentState := a.activeState
+	var newState AppState
+	var newState_idx int
+	for si, s := range a.backend.States {
+		if s == currentState {
+			if si+1 < len(a.backend.States) {
+				newState = a.backend.States[si+1]
+				newState_idx = si + 1
+				break
+			} else {
+				panic("No next state")
+			}
+		}
+	}
+	currentContainer := a.containers[currentState]
+	newContainer := a.backend.Constructors[newState](currentContainer)
+	is_first := false
+	is_last := (newState_idx == len(a.backend.States)-1)
+	if head, ok := newContainer.(obj.Collection); ok {
+		newContainer = head.AddElements(a.GenerateControls(is_first, is_last))
+	} else {
+		panic("New container must be a collection")
+	}
+	a.activeState = newState
+	a.containers[newState] = newContainer.(obj.Collection).Focus()
+	return a
+}
+
+func (a App) PrevState() App {
+	currentState := a.activeState
+	var newState AppState
+	for si, s := range a.backend.States {
+		if s == currentState {
+			if si-1 >= 0 {
+				newState = a.backend.States[si-1]
+				break
+			} else {
+				panic("No prev state")
+			}
+		}
+	}
+	if newContainer, ok := a.containers[newState]; !ok {
+		panic("No container for prev state")
+	} else {
+		a.activeState = newState
+		a.containers[newState] = newContainer.(obj.Collection).Focus()
+		return a
+	}
+}

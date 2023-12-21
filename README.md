@@ -2,16 +2,14 @@
 
 ## a terminal UI framework written in Go using the `bubbletea` library.
 
-![demo](demo.gif)
-
-see `example/` for an example usage of `tuigo`. the scheme below shows roughly the structure of the API.
+see [`example/`](example/) for an example usage of `tuigo`. the scheme below shows roughly the structure of the API.
 
 ```mermaid
 %%{
   init: {
-    'theme': 'base', 
-    'themeVariables': { 
-        'fontFamily': 'monospace',
+    'theme': 'base',
+    'themeVariables': {
+        'fontFamily': 'JetBrainsMono Nerd Font, BlexMono Nerd Font, Roboto Mono, Source Code Pro, monospace',
         'primaryColor': '#4C2FAD',
         'primaryTextColor': '#FFFFFF',
         'lineColor': '#E840E0',
@@ -21,38 +19,51 @@ see `example/` for an example usage of `tuigo`. the scheme below shows roughly t
 }%%
 
 classDiagram
-class tuigo["tuigo"]
-class tui_utils["tuigo/utils"]
-class tui_field["tuigo"]
-class tui_component["tuigo"]
+  namespace tuigo {
+    class tuigo_pkg[" "] {
+      NewContainer :: Func[bool, ContainerType, ...Element] -> Element
+      NewButton :: Func[string, ButtonType, Msg] -> Element
+      NewSelector :: Func[List~string~] -> Element
+      NewInput :: Func[string, string, string, InputType] -> Element
+      NewRadio :: Func[string] -> Element
+    }
+  }
+  
+  namespace app {
+    class Backend["Backend"]{
+      States :: List~AppState~
+      Constructors :: Map[AppState]~Func[Element] -> Element~
+      Finalizer :: Func[Map[AppState]~Element~]
+    }
 
-tuigo <-- tui_utils : initial state
-tuigo <-- tui_field : mapping from states to fields
-tuigo : NewApp(utils.State, map[utils.State]Field, bool) App
-tuigo : App
+    class NewApp[" "] {
+      NewApp :: Func[Backend, bool] -> App
+    }
+  }
+  note for Backend "AppState = string"
 
-tui_utils : Label() string
-tui_utils : Next() utils.State
-tui_utils : Prev() utils.State
-tui_utils : utils.State
+  namespace tea {
+    class tea_pkg[" "] {
+      NewProgram :: Func[Model, ...ProgramOption] -> *Program
+    }
+  }
 
-tui_field : NewField(string, bool, bool) Field
-tui_field : Field
-
-tui_component : Field.AddElement(&component) Field
-tui_component : NewButton(string, utils.ButtonType, tea.Msg) button.Model
-tui_component : NewSelector([]string, bool) selector.Model
-tui_component : NewRadio(string) radio.Model
-tui_component : NewInput(string, string, string, utils.InputType) button.Model
-
-tui_field <-- tui_component : populate the field with interactive components
+  tuigo_pkg --o Backend
+  NewApp --o tea_pkg
+  Backend --o NewApp
+end
 ```
 
 ## TODO
 
+- [x] app backend
+- [x] grid structure
+- [ ] unit tests
+  - [x] elements
+  - [ ] backend
+  - [ ] app
 - [ ] customizable theme
 - [ ] more components
-- [x] grid structure
+- [ ] easily accessible components
 - [ ] key help menu
-- [ ] field validator
-- [x] unit tests
+- [ ] validators

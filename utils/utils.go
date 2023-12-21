@@ -80,6 +80,7 @@ type FocusNextMsg struct{}
 type FocusPrevMsg struct{}
 type NextStateMsg struct{}
 type PrevStateMsg struct{}
+type SubmitMsg struct{}
 
 // for testing
 
