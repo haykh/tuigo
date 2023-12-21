@@ -5,7 +5,7 @@ go 1.21.5
 retract (
   v0.1.0 // pre-release
   v0.1.1 // wrong retraction
-	v1.0.0 // premature release
+  v1.0.0 // premature release
   v1.0.1 // retraction of all the above
 )
 
