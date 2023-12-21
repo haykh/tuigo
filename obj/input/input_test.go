@@ -9,8 +9,8 @@ import (
 type TestMsg struct{}
 
 func TestPathInput(t *testing.T) {
-	input := Model{
-		model:     NewTextinput("test", "<default>", "<placeholder>"),
+	input := TextInput{
+		model:     NewTextinputModel("test", "<default>", "<placeholder>"),
 		inputtype: utils.TextInput,
 	}
 	{

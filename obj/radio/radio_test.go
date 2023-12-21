@@ -4,21 +4,22 @@ import (
 	"testing"
 
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/haykh/tuigo/obj"
 )
 
 type TestMsg struct{}
 
 func TestRadio(t *testing.T) {
-	radio := Model{
-		"test", false,
+	radio := Radio{
+		obj.NewElementWithID(0), "test", false,
 	}
 	{
 		r1, _ := radio.Update(tea.KeyMsg{Type: tea.KeySpace})
-		radio = r1.(Model)
+		radio = r1.(Radio)
 		if !radio.State() {
 			t.Fatalf("radio did not toggle on space")
 		}
-		radio.Toggle()
+		radio = radio.Toggle()
 		if radio.State() {
 			t.Fatalf("radio did not toggle")
 		}

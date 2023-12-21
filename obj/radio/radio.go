@@ -12,43 +12,47 @@ import (
 	"github.com/haykh/tuigo/utils"
 )
 
-var _ obj.Element = (*Model)(nil)
+var _ obj.Element = (*Radio)(nil)
+var _ obj.Accessor = (*Radio)(nil)
 
-type Model struct {
+type Radio struct {
+	obj.ElementWithID
 	label string
 	state bool
 }
 
-func New(label string) obj.Element {
-	return container.NewSimpleContainer(true, Model{
-		label: label,
-		state: false,
+func New(id int, label string) obj.Element {
+	return container.NewSimpleContainer(true, Radio{
+		ElementWithID: obj.NewElementWithID(id),
+		label:         label,
+		state:         false,
 	})
 }
 
-func (m Model) Update(msg tea.Msg) (obj.Element, tea.Cmd) {
+func (r Radio) Update(msg tea.Msg) (obj.Element, tea.Cmd) {
 	var cmd tea.Cmd
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
 		switch {
 		case key.Matches(msg, keys.Keys.Space):
-			m.Toggle()
-			cmd = utils.DebugCmd(fmt.Sprintf("%s toggled", m.label))
+			r = r.Toggle()
+			cmd = utils.DebugCmd(fmt.Sprintf("%s toggled", r.label))
 		}
 	}
-	return m, cmd
+	return r, cmd
 }
 
-func (m Model) View(focused bool) string {
-	return ui.RadioView(focused, m.label, m.state)
+func (r Radio) View(focused bool) string {
+	return ui.RadioView(focused, r.label, r.state)
 }
 
 // access
 
-func (m *Model) Toggle() {
-	m.state = !m.state
+func (r Radio) Toggle() Radio {
+	r.state = !r.state
+	return r
 }
 
-func (m Model) State() bool {
-	return m.state
+func (r Radio) State() bool {
+	return r.state
 }

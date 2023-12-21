@@ -10,7 +10,7 @@ import (
 type TestMsg struct{}
 
 func TestButton(t *testing.T) {
-	button := Model{
+	button := Button{
 		label:   "test",
 		btntype: utils.SimpleBtn,
 		action:  TestMsg{},

@@ -107,9 +107,9 @@ func (a App) View() string {
 
 func (a App) GenerateControls(isFirst, isLast bool) obj.Element {
 	controls := []obj.Element{}
-	prevbtn := button.New("< prev", utils.ControlBtn, utils.PrevStateMsg{})
-	nextbtn := button.New("next >", utils.ControlBtn, utils.NextStateMsg{})
-	submitbtn := button.New("submit", utils.ControlBtn, utils.SubmitMsg{})
+	prevbtn := button.New(-100, "< prev", utils.ControlBtn, utils.PrevStateMsg{})
+	nextbtn := button.New(-200, "next >", utils.ControlBtn, utils.NextStateMsg{})
+	submitbtn := button.New(-300, "submit", utils.ControlBtn, utils.SubmitMsg{})
 	if !isFirst {
 		controls = append(controls, prevbtn)
 	}

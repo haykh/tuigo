@@ -12,9 +12,11 @@ import (
 	"github.com/haykh/tuigo/utils"
 )
 
-var _ obj.Element = (*Model)(nil)
+var _ obj.Element = (*Selector)(nil)
+var _ obj.Accessor = (*Selector)(nil)
 
-type Model struct {
+type Selector struct {
+	obj.ElementWithID
 	multiselect bool
 	cursor      int
 	options     []string
@@ -22,76 +24,82 @@ type Model struct {
 	disabled    map[string]struct{}
 }
 
-func New(options []string, multiselect bool) obj.Element {
-	return container.NewSimpleContainer(true, Model{
-		multiselect: multiselect,
-		cursor:      0,
-		options:     options,
-		selected:    map[string]struct{}{},
-		disabled:    map[string]struct{}{},
+func New(id int, options []string, multiselect bool) obj.Element {
+	return container.NewSimpleContainer(true, Selector{
+		ElementWithID: obj.NewElementWithID(id),
+		multiselect:   multiselect,
+		cursor:        0,
+		options:       options,
+		selected:      map[string]struct{}{},
+		disabled:      map[string]struct{}{},
 	})
 }
 
-func (m Model) Update(msg tea.Msg) (obj.Element, tea.Cmd) {
+func (s Selector) Update(msg tea.Msg) (obj.Element, tea.Cmd) {
 	var cmd tea.Cmd
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
 		switch {
 		case key.Matches(msg, keys.Keys.Up):
-			m.Prev()
+			s = s.Prev()
 		case key.Matches(msg, keys.Keys.Down):
-			m.Next()
+			s = s.Next()
 		case key.Matches(msg, keys.Keys.Space):
-			m.Toggle()
-			cmd = utils.DebugCmd(fmt.Sprintf("%s toggled", m.options[m.cursor]))
+			s = s.Toggle()
+			cmd = utils.DebugCmd(fmt.Sprintf("%s toggled", s.options[s.cursor]))
 		}
 	}
-	return m, cmd
+	return s, cmd
 }
 
-func (m Model) View(focused bool) string {
-	return ui.SelectorView(focused, m.multiselect, m.cursor, m.options, m.selected, m.disabled)
+func (s Selector) View(focused bool) string {
+	return ui.SelectorView(focused, s.multiselect, s.cursor, s.options, s.selected, s.disabled)
 }
 
 // access
 
-func (m *Model) Disable(opt string) {
-	m.disabled[opt] = struct{}{}
-	delete(m.selected, opt)
+func (s Selector) Disable(opt string) Selector {
+	s.disabled[opt] = struct{}{}
+	delete(s.selected, opt)
+	return s
 }
 
-func (m *Model) Enable(opt string) {
-	delete(m.disabled, opt)
+func (s Selector) Enable(opt string) Selector {
+	delete(s.disabled, opt)
+	return s
 }
 
-func (m *Model) Toggle() {
-	if _, ok := m.selected[m.options[m.cursor]]; ok {
-		delete(m.selected, m.options[m.cursor])
+func (s Selector) Toggle() Selector {
+	if _, ok := s.selected[s.options[s.cursor]]; ok {
+		delete(s.selected, s.options[s.cursor])
 	} else {
 
-		if !m.multiselect {
-			m.selected = map[string]struct{}{m.options[m.cursor]: {}}
+		if !s.multiselect {
+			s.selected = map[string]struct{}{s.options[s.cursor]: {}}
 		} else {
-			m.selected[m.options[m.cursor]] = struct{}{}
+			s.selected[s.options[s.cursor]] = struct{}{}
 		}
 	}
+	return s
 }
 
-func (m *Model) Next() {
-	m.cursor = (m.cursor + 1 + len(m.options)) % len(m.options)
-	if _, ok := m.disabled[m.options[m.cursor]]; ok {
-		m.Next()
+func (s Selector) Next() Selector {
+	s.cursor = (s.cursor + 1 + len(s.options)) % len(s.options)
+	if _, ok := s.disabled[s.options[s.cursor]]; ok {
+		s = s.Next()
 	}
+	return s
 }
 
-func (m *Model) Prev() {
-	m.cursor = (m.cursor - 1 + len(m.options)) % len(m.options)
-	if _, ok := m.disabled[m.options[m.cursor]]; ok {
-		m.Prev()
+func (s Selector) Prev() Selector {
+	s.cursor = (s.cursor - 1 + len(s.options)) % len(s.options)
+	if _, ok := s.disabled[s.options[s.cursor]]; ok {
+		s.Prev()
 	}
+	return s
 }
 
-func (m Model) Selected() []string {
+func (m Selector) Selected() []string {
 	var selected []string
 	for _, o := range m.options {
 		if _, ok := m.selected[o]; ok {
@@ -101,6 +109,6 @@ func (m Model) Selected() []string {
 	return selected
 }
 
-func (m Model) Cursor() int {
+func (m Selector) Cursor() int {
 	return m.cursor
 }

@@ -8,22 +8,27 @@ import (
 	"github.com/haykh/tuigo/utils"
 )
 
-type Model struct {
+var _ obj.Element = (*Text)(nil)
+var _ obj.Accessor = (*Text)(nil)
+
+type Text struct {
+	obj.ElementWithID
 	texttype utils.TextType
 	txt      string
 }
 
-func New(txt string, texttype utils.TextType) obj.Element {
-	return container.NewSimpleContainer(false, Model{
-		texttype: texttype,
-		txt:      txt,
+func New(id int, txt string, texttype utils.TextType) obj.Element {
+	return container.NewSimpleContainer(false, Text{
+		ElementWithID: obj.NewElementWithID(id),
+		texttype:      texttype,
+		txt:           txt,
 	})
 }
 
-func (m Model) Update(msg tea.Msg) (obj.Element, tea.Cmd) {
-	return m, nil
+func (t Text) Update(msg tea.Msg) (obj.Element, tea.Cmd) {
+	return t, nil
 }
 
-func (m Model) View(bool) string {
-	return ui.TextView(false, m.txt, m.texttype)
+func (t Text) View(bool) string {
+	return ui.TextView(false, t.txt, t.texttype)
 }

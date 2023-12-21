@@ -12,14 +12,16 @@ import (
 	"github.com/haykh/tuigo/utils"
 )
 
-var _ obj.Element = (*Model)(nil)
+var _ obj.Element = (*TextInput)(nil)
+var _ obj.Accessor = (*TextInput)(nil)
 
-type Model struct {
+type TextInput struct {
+	obj.ElementWithID
 	inputtype utils.InputType
 	model     textinput.Model
 }
 
-func NewTextinput(label, def, placeholder string) textinput.Model {
+func NewTextinputModel(label, def, placeholder string) textinput.Model {
 	m := textinput.New()
 	m.Focus()
 	m.SetValue(def)
@@ -28,25 +30,26 @@ func NewTextinput(label, def, placeholder string) textinput.Model {
 	return m
 }
 
-func New(label, def, placeholder string, inputtype utils.InputType) obj.Element {
-	m := NewTextinput(label, def, placeholder)
+func New(id int, label, def, placeholder string, inputtype utils.InputType) obj.Element {
+	m := NewTextinputModel(label, def, placeholder)
 	if inputtype == utils.PathInput {
 		m.ShowSuggestions = true
 		m.KeyMap.AcceptSuggestion = keys.Keys.Right
 		m.KeyMap.NextSuggestion = keys.Keys.Down
 		m.KeyMap.PrevSuggestion = keys.Keys.Up
 	}
-	return container.NewSimpleContainer(true, Model{
-		inputtype: inputtype,
-		model:     m,
+	return container.NewSimpleContainer(true, TextInput{
+		ElementWithID: obj.NewElementWithID(id),
+		inputtype:     inputtype,
+		model:         m,
 	})
 }
 
-func (m Model) Update(msg tea.Msg) (obj.Element, tea.Cmd) {
-	if m.inputtype == utils.PathInput {
+func (ti TextInput) Update(msg tea.Msg) (obj.Element, tea.Cmd) {
+	if ti.inputtype == utils.PathInput {
 		// update suggestions
 		var suggestions []string
-		entry := m.model.Value()
+		entry := ti.model.Value()
 		for i := len(entry) - 1; i >= 0; i-- {
 			if entry[i] == '/' {
 				entry = entry[:i+1]
@@ -61,24 +64,24 @@ func (m Model) Update(msg tea.Msg) (obj.Element, tea.Cmd) {
 			for _, e := range entries {
 				suggestions = append(suggestions, entry+e.Name())
 			}
-			m.model.SetSuggestions(suggestions)
+			ti.model.SetSuggestions(suggestions)
 		}
 	}
 
 	var cmd tea.Cmd
-	m.model, cmd = m.model.Update(msg)
-	return m, cmd
+	ti.model, cmd = ti.model.Update(msg)
+	return ti, cmd
 }
 
-func (m Model) View(focused bool) string {
+func (ti TextInput) View(focused bool) string {
 	if focused {
-		m.model.Focus()
+		ti.model.Focus()
 	} else {
-		m.model.Blur()
+		ti.model.Blur()
 	}
-	return ui.PathInputView(focused, m.model)
+	return ui.PathInputView(focused, ti.model)
 }
 
-func (m Model) Value() string {
-	return m.model.Value()
+func (ti TextInput) Value() string {
+	return ti.model.Value()
 }

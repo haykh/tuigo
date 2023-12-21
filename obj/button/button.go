@@ -12,39 +12,42 @@ import (
 	"github.com/haykh/tuigo/utils"
 )
 
-var _ obj.Element = (*Model)(nil)
+var _ obj.Element = (*Button)(nil)
+var _ obj.Accessor = (*Button)(nil)
 
-type Model struct {
+type Button struct {
+	obj.ElementWithID
 	label   string
 	btntype utils.ButtonType
 	action  tea.Msg
 }
 
-func New(label string, btntype utils.ButtonType, action tea.Msg) obj.Element {
-	return container.NewSimpleContainer(true, Model{
-		label:   label,
-		btntype: btntype,
-		action:  action,
+func New(id int, label string, btntype utils.ButtonType, action tea.Msg) obj.Element {
+	return container.NewSimpleContainer(true, Button{
+		ElementWithID: obj.NewElementWithID(id),
+		label:         label,
+		btntype:       btntype,
+		action:        action,
 	})
 }
 
-func (m Model) Update(msg tea.Msg) (obj.Element, tea.Cmd) {
+func (b Button) Update(msg tea.Msg) (obj.Element, tea.Cmd) {
 	var cmds []tea.Cmd
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
 		switch {
 		case key.Matches(msg, keys.Keys.Space) || key.Matches(msg, keys.Keys.Enter):
-			cmds = append(cmds, utils.Callback(m.Action()))
-			cmds = append(cmds, utils.DebugCmd(fmt.Sprintf("%s called", m.label)))
+			cmds = append(cmds, utils.Callback(b.Action()))
+			cmds = append(cmds, utils.DebugCmd(fmt.Sprintf("%s called", b.label)))
 		}
 	}
-	return m, tea.Batch(cmds...)
+	return b, tea.Batch(cmds...)
 }
 
-func (m Model) View(focused bool) string {
-	return ui.ButtonView(focused, m.label, m.btntype)
+func (b Button) View(focused bool) string {
+	return ui.ButtonView(focused, b.label, b.btntype)
 }
 
-func (m Model) Action() tea.Msg {
-	return m.action
+func (b Button) Action() tea.Msg {
+	return b.action
 }
