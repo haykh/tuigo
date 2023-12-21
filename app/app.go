@@ -53,9 +53,13 @@ func (a App) Init() tea.Cmd {
 	head_container := a.backend.Constructors[a.backend.States[0]](nil)
 	is_first := true
 	is_last := len(a.backend.States) == 1
-	head_container = head_container.AddElements(a.GenerateControls(is_first, is_last))
-	a.containers[a.activeState] = head_container
-	a.containers[a.activeState] = a.containers[a.activeState].Focus()
+	parentContainer := container.New(
+		true,
+		utils.VerticalContainer,
+		head_container,
+		a.GenerateControls(is_first, is_last),
+	)
+	a.containers[a.activeState] = parentContainer.Focus()
 	return nil
 }
 
@@ -142,9 +146,14 @@ func (a App) NextState() App {
 	newContainer := a.backend.Constructors[newState](currentContainer)
 	is_first := false
 	is_last := (newState_idx == len(a.backend.States)-1)
-	newContainer = newContainer.AddElements(a.GenerateControls(is_first, is_last))
+	parentContainer := container.New(
+		true,
+		utils.VerticalContainer,
+		newContainer,
+		a.GenerateControls(is_first, is_last),
+	)
 	a.activeState = newState
-	a.containers[newState] = newContainer.Focus()
+	a.containers[newState] = parentContainer.Focus()
 	return a
 }
 
