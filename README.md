@@ -92,12 +92,15 @@ classDiagram
     Hidden() bool
     Focusable() bool
     Focused() bool
+	  Disabled() bool
   }
 
   class Component {
     <<interface>>
     Hide() Component
     Unhide() Component
+	  Enable() Component
+	  Disable() Component
     Focus() Component
     FocusFromStart() Component
     FocusFromEnd() Component
@@ -259,7 +262,7 @@ classDiagram
 - [ ] unit tests
   - [x] elements
   - [x] containers
-  - [ ] calbacks
+  - [ ] callbacks
   - [ ] backend
   - [ ] app
 - [ ] customizable theme

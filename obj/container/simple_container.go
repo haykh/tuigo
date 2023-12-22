@@ -8,6 +8,7 @@ import (
 )
 
 var _ obj.Element = (*SimpleContainer)(nil)
+var _ AbstractComponent = (*SimpleContainer)(nil)
 var _ Component = (*SimpleContainer)(nil)
 var _ Wrapper = (*SimpleContainer)(nil)
 
@@ -84,13 +85,22 @@ func (sc SimpleContainer) Element() obj.Element {
 
 // implementing Component
 func (sc SimpleContainer) Hide() Component {
-	sc = sc.Blur().(SimpleContainer)
 	sc.hidden = true
 	return sc
 }
 
 func (sc SimpleContainer) Unhide() Component {
 	sc.hidden = false
+	return sc
+}
+
+func (sc SimpleContainer) Enable() Component {
+	sc.focusable = true
+	return sc
+}
+
+func (sc SimpleContainer) Disable() Component {
+	sc.focusable = false
 	return sc
 }
 
