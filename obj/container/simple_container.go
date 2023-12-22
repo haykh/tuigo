@@ -18,6 +18,9 @@ type SimpleContainer struct {
 
 func NewSimpleContainer(focusable bool, element obj.Element) SimpleContainer {
 	render := func(self Component) string {
+		if self.Hidden() {
+			return ""
+		}
 		var el_view string
 		switch self := self.(type) {
 		case SimpleContainer:
@@ -40,6 +43,21 @@ func NewSimpleContainer(focusable bool, element obj.Element) SimpleContainer {
 
 // implementing Element
 func (sc SimpleContainer) Update(msg tea.Msg) (obj.Element, tea.Cmd) {
+	// targeted message ignores focus
+	switch msg := msg.(type) {
+	case utils.TargetedMsg:
+		if acc, ok := sc.element.(obj.Accessor); ok {
+			if acc.ID() == msg.ID() {
+				action := msg.Action().(func(Wrapper, obj.Accessor) (Wrapper, obj.Accessor))
+				newsc, acc := action(sc, acc)
+				sc = newsc.(SimpleContainer)
+				sc.element = acc.(obj.Element)
+				return sc, nil
+			}
+		}
+		return sc, nil
+	}
+	// messages that require focus
 	if sc.Focusable() && sc.Focused() {
 		switch msg.(type) {
 		case utils.FocusNextMsg:

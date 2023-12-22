@@ -167,11 +167,26 @@ classDiagram
     Data() interface<>
   }
 
+  class Actor {
+    <<interface>>
+    Callback()
+  }
+
   class Element {
     <<interface>>
     View(bool) string
     Update(tea.Msg) (Element, tea.Cmd)
   }
+
+  class ElementWithID {
+    -int id
+  }
+
+  class ElementWithCallback {
+    -tea.Msg callback
+  }
+  ElementWithID ..|> Accessor
+  ElementWithCallback ..|> Actor
 
   class Button {
     -string label
@@ -180,12 +195,18 @@ classDiagram
     -tea.Msg action
     +Data() -> Button::npresses
   }
+  ElementWithID <|-- Button
+  ElementWithCallback <|-- Button
+  Element <|.. Button
 
   class TextInput {
     -InputType inputtype
     -textinput.Model model    
     +Data() -> TextInput::model.Value -> string
   }
+  ElementWithID <|-- TextInput
+  ElementWithCallback <|-- TextInput
+  Element <|.. TextInput
 
   class Radio {
 	  -string label
@@ -193,6 +214,9 @@ classDiagram
     +Toggle() -> Radio
     +Data() -> Radio::state
   }
+  ElementWithID <|-- Radio
+  ElementWithCallback <|-- Radio
+  Element <|.. Radio
 
   class Selector {
     -bool multiselect
@@ -200,8 +224,9 @@ classDiagram
     -List~string~ options
     -Map~string~ selected
     -Map~string~ disabled
-    +Disable(string) -> Selector
     +Enable(string) -> Selector
+    +Disable(string) -> Selector
+    +Disabled(string) -> bool
     +Toggle(string) -> Selector
     +Next() -> Selector
     +Prev() -> Selector
@@ -209,23 +234,19 @@ classDiagram
     +Cursor() -> int
     +Data() -> Selector::Selected -> List~string~
   }
+  Element <|.. Selector
+  ElementWithID <|-- Selector
+  ElementWithCallback <|-- Selector
 
   class Text {
     -string text
     -TextType texttype
     +Data() -> Text::text
+    +Set(string) -> Text
   }
-
-  Element <|.. Button
-  Accessor <|.. Button
-  Element <|.. TextInput
-  Accessor <|.. TextInput
-  Element <|.. Radio
-  Accessor <|.. Radio
-  Element <|.. Selector
-  Accessor <|.. Selector
+  ElementWithID <|-- Text
+  ElementWithCallback <|-- Text
   Element <|.. Text
-  Accessor <|.. Text
 ```
 
 ## TODO
