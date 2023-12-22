@@ -57,6 +57,9 @@ type InputElement = input.Input
 type ButtonElement = button.Button
 type SelectorElement = selector.Selector
 
+type ComplexContainerElement = container.ComplexContainer
+type SimpleContainerElement = container.SimpleContainer
+
 // component types
 type ContainerType = utils.ContainerType
 
