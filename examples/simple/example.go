@@ -26,7 +26,7 @@ func main() {
 					true,
 					tuigo.VerticalContainer,
 					tuigo.Text("text2", tuigo.DimmedText),
-					tuigo.Button("button4", tuigo.SimpleBtn, nil),
+					tuigo.Button("hidden_button4", tuigo.SimpleBtn, nil).Hide(),
 					tuigo.Selector([]string{"item1", "item2", "item3", "item4", "item5"}, false),
 					tuigo.Text("text3", tuigo.DimmedText),
 				)

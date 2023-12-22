@@ -11,6 +11,7 @@ var _ obj.Element = (*Container)(nil)
 var _ obj.Collection = (*Container)(nil)
 
 type Container struct {
+	hidden        bool
 	focusable     bool
 	focused       bool
 	containerType utils.ContainerType
@@ -26,11 +27,14 @@ func New(focusable bool, containerType utils.ContainerType, elements ...obj.Elem
 	render := func(self Container) string {
 		el_views := []string{}
 		for _, element := range self.elements {
-			el_views = append(el_views, element.View(self.Focused()))
+			if el, ok := element.(obj.Collection); (ok && !el.Hidden()) || !ok {
+				el_views = append(el_views, element.View(self.Focused()))
+			}
 		}
 		return ui.ContainerView(self.focused, self.containerType, el_views...)
 	}
 	return Container{
+		hidden:        false,
 		focusable:     focusable,
 		focused:       false,
 		containerType: containerType,
@@ -72,6 +76,17 @@ func (c Container) Update(msg tea.Msg) (obj.Element, tea.Cmd) {
 	return c, nil
 }
 
+func (c Container) Hidden() bool {
+	return c.hidden
+}
+
+func (c Container) Hide() obj.Collection {
+	c = c.Blur().(Container)
+	c.focusable = false
+	c.hidden = true
+	return c
+}
+
 func (c Container) Focusable() bool {
 	return c.focusable
 }
@@ -89,7 +104,7 @@ func (c Container) FocusFromStart() obj.Collection {
 		c.focused = true
 		for e, element := range c.elements {
 			if el, ok := element.(obj.Collection); ok {
-				c.elements[e] = el.Focus()
+				c.elements[e] = el.FocusFromStart()
 				if c.elements[e].(obj.Collection).Focused() {
 					break
 				}
@@ -105,7 +120,7 @@ func (c Container) FocusFromEnd() obj.Collection {
 		for e := len(c.elements) - 1; e >= 0; e-- {
 			element := c.elements[e]
 			if el, ok := element.(obj.Collection); ok {
-				c.elements[e] = el.Focus()
+				c.elements[e] = el.FocusFromEnd()
 				if c.elements[e].(obj.Collection).Focused() {
 					break
 				}
@@ -208,7 +223,7 @@ func (c Container) FocusPrev() (obj.Collection, tea.Cmd) {
 							}
 							focus_prev = true
 						case FocusChangedMsg:
-							return c, nil
+							return c, cmd
 						default:
 							panic("unknown cmd")
 						}

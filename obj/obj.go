@@ -18,6 +18,8 @@ type Collection interface {
 	Element
 	Elements() []Element
 	AddElements(...Element) Collection
+	Hidden() bool
+	Hide() Collection
 	Focusable() bool
 	Focused() bool
 	Focus() Collection
