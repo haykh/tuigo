@@ -254,10 +254,11 @@ classDiagram
 - [x] app backend
 - [x] grid structure
 - [x] easily accessible components
-- [ ] update components based on others
+- [x] update components based on others
 - [ ] unit tests
   - [x] elements
   - [x] containers
+  - [ ] calbacks
   - [ ] backend
   - [ ] app
 - [ ] customizable theme

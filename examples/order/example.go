@@ -145,7 +145,7 @@ func main() {
 			)
 		},
 	}
-	p := tea.NewProgram(tuigo.App(backend, true))
+	p := tea.NewProgram(tuigo.App(backend, false))
 	if _, err := p.Run(); err != nil {
 		fmt.Printf("error: %v", err)
 		os.Exit(1)
