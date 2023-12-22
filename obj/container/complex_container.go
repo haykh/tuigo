@@ -8,6 +8,7 @@ import (
 )
 
 var _ obj.Element = (*ComplexContainer)(nil)
+var _ AbstractComponent = (*ComplexContainer)(nil)
 var _ Component = (*ComplexContainer)(nil)
 var _ Collection = (*ComplexContainer)(nil)
 
@@ -108,13 +109,22 @@ func (cc ComplexContainer) AddComponents(components ...Component) Collection {
 
 // implementing Component
 func (cc ComplexContainer) Hide() Component {
-	cc = cc.Blur().(ComplexContainer)
 	cc.hidden = true
 	return cc
 }
 
 func (cc ComplexContainer) Unhide() Component {
 	cc.hidden = false
+	return cc
+}
+
+func (cc ComplexContainer) Enable() Component {
+	cc.focusable = true
+	return cc
+}
+
+func (cc ComplexContainer) Disable() Component {
+	cc.focusable = false
 	return cc
 }
 

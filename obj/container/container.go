@@ -10,6 +10,7 @@ type AbstractComponent interface {
 	Hidden() bool
 	Focusable() bool
 	Focused() bool
+	Disabled() bool
 }
 
 type Component interface {
@@ -17,6 +18,8 @@ type Component interface {
 	AbstractComponent
 	Hide() Component
 	Unhide() Component
+	Enable() Component
+	Disable() Component
 	Focus() Component
 	FocusFromStart() Component
 	FocusFromEnd() Component
@@ -57,6 +60,10 @@ func (c Container) Focusable() bool {
 
 func (c Container) Focused() bool {
 	return c.focused
+}
+
+func (c Container) Disabled() bool {
+	return !c.focusable
 }
 
 type focusChangedMsg struct{}
