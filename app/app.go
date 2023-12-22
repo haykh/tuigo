@@ -11,6 +11,7 @@ import (
 	"github.com/haykh/tuigo/obj/button"
 	"github.com/haykh/tuigo/obj/container"
 	"github.com/haykh/tuigo/ui"
+	"github.com/haykh/tuigo/ui/theme"
 	"github.com/haykh/tuigo/utils"
 )
 
@@ -37,6 +38,7 @@ func New(backend Backend, enable_debug bool) App {
 	dbg := debug.New()
 	if enable_debug {
 		dbg.Enable()
+		theme.DEBUG_STYLE = true
 	}
 	if _, ok := backend.Constructors[backend.States[0]]; !ok {
 		panic("No constructor for initial state")

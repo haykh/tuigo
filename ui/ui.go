@@ -10,6 +10,7 @@ import (
 	"github.com/haykh/tuigo/ui/radio"
 	"github.com/haykh/tuigo/ui/selector"
 	"github.com/haykh/tuigo/ui/text"
+	"github.com/haykh/tuigo/ui/theme"
 	"github.com/haykh/tuigo/utils"
 )
 
@@ -22,8 +23,11 @@ func AppView(contents ...string) string {
 func ContainerView(focused bool, containerType utils.ContainerType, contents ...string) string {
 	if containerType == utils.SimpleContainer {
 		if len(contents) != 1 {
-			// contents = []string{"dummy"}
-			panic("SimpleContainer must have exactly one element")
+			if theme.DEBUG_STYLE {
+				contents = []string{"dummy"}
+			} else {
+				panic("SimpleContainer must have exactly one element")
+			}
 		}
 	}
 	return container.View(focused, containerType, contents...)
