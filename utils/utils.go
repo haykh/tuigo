@@ -10,8 +10,7 @@ import (
 type ContainerType int
 
 const (
-	SimpleContainer ContainerType = iota
-	VerticalContainer
+	VerticalContainer ContainerType = iota
 	HorizontalContainer
 )
 

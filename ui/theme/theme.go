@@ -3,6 +3,10 @@ package theme
 import "github.com/charmbracelet/lipgloss"
 
 var (
+	DEBUG_MODE = false
+)
+
+var (
 	ColorDimmed  = lipgloss.AdaptiveColor{Light: "#272a31", Dark: "#31353d"}
 	ColorSuccess = lipgloss.AdaptiveColor{Light: "#3eb86d", Dark: "#67cc8e"}
 	ColorLight   = lipgloss.AdaptiveColor{Light: "#ffffff", Dark: "#f2f2f2"}

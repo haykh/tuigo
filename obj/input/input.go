@@ -12,10 +12,10 @@ import (
 	"github.com/haykh/tuigo/utils"
 )
 
-var _ obj.Element = (*TextInput)(nil)
-var _ obj.Accessor = (*TextInput)(nil)
+var _ obj.Element = (*Input)(nil)
+var _ obj.Accessor = (*Input)(nil)
 
-type TextInput struct {
+type Input struct {
 	obj.ElementWithID
 	inputtype utils.InputType
 	model     textinput.Model
@@ -30,7 +30,7 @@ func NewTextinputModel(label, def, placeholder string) textinput.Model {
 	return m
 }
 
-func New(id int, label, def, placeholder string, inputtype utils.InputType) obj.Element {
+func New(id int, label, def, placeholder string, inputtype utils.InputType) container.SimpleContainer {
 	m := NewTextinputModel(label, def, placeholder)
 	if inputtype == utils.PathInput {
 		m.ShowSuggestions = true
@@ -38,14 +38,14 @@ func New(id int, label, def, placeholder string, inputtype utils.InputType) obj.
 		m.KeyMap.NextSuggestion = keys.Keys.Down
 		m.KeyMap.PrevSuggestion = keys.Keys.Up
 	}
-	return container.NewSimpleContainer(true, TextInput{
+	return container.NewSimpleContainer(true, Input{
 		ElementWithID: obj.NewElementWithID(id),
 		inputtype:     inputtype,
 		model:         m,
 	})
 }
 
-func (ti TextInput) Update(msg tea.Msg) (obj.Element, tea.Cmd) {
+func (ti Input) Update(msg tea.Msg) (obj.Element, tea.Cmd) {
 	if ti.inputtype == utils.PathInput {
 		// update suggestions
 		var suggestions []string
@@ -73,7 +73,7 @@ func (ti TextInput) Update(msg tea.Msg) (obj.Element, tea.Cmd) {
 	return ti, cmd
 }
 
-func (ti TextInput) View(focused bool) string {
+func (ti Input) View(focused bool) string {
 	if focused {
 		ti.model.Focus()
 	} else {
@@ -82,6 +82,6 @@ func (ti TextInput) View(focused bool) string {
 	return ui.PathInputView(focused, ti.model)
 }
 
-func (ti TextInput) Data() interface{} {
+func (ti Input) Data() interface{} {
 	return ti.model.Value()
 }

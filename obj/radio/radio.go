@@ -21,7 +21,7 @@ type Radio struct {
 	state bool
 }
 
-func New(id int, label string) obj.Element {
+func New(id int, label string) container.SimpleContainer {
 	return container.NewSimpleContainer(true, Radio{
 		ElementWithID: obj.NewElementWithID(id),
 		label:         label,

@@ -23,7 +23,7 @@ type Button struct {
 	action   tea.Msg
 }
 
-func New(id int, label string, btntype utils.ButtonType, action tea.Msg) obj.Element {
+func New(id int, label string, btntype utils.ButtonType, action tea.Msg) container.SimpleContainer {
 	return container.NewSimpleContainer(true, Button{
 		ElementWithID: obj.NewElementWithID(id),
 		label:         label,
