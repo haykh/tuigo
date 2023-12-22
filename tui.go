@@ -15,10 +15,11 @@ import (
 
 // aliases
 type AppState = app.AppState
+type Window = app.Window
 type Constructor = app.Constructor
+type Updater = app.Updater
 type Backend = app.Backend
 type Element = obj.Element
-type Collection = obj.Collection
 
 // constructors
 var App = app.New
@@ -29,28 +30,34 @@ var InputWithID = input.New
 var ButtonWithID = button.New
 var SelectorWithID = selector.New
 
-var Container = container.New
+var Container = container.NewComplexContainer
 
-var Text = func(txt string, txttype TextType) Collection {
+var Text = func(txt string, txttype TextType) container.SimpleContainer {
 	return TextWithID(-1, txt, txttype)
 }
-var Radio = func(lbl string) Collection {
+var Radio = func(lbl string) container.SimpleContainer {
 	return RadioWithID(-1, lbl)
 }
-var Input = func(lbl, def, plc string, inptype InputType) Collection {
+var Input = func(lbl, def, plc string, inptype InputType) container.SimpleContainer {
 	return InputWithID(-1, lbl, def, plc, inptype)
 }
-var Button = func(lbl string, btntype ButtonType, act tea.Msg) Collection {
+var Button = func(lbl string, btntype ButtonType, act tea.Msg) container.SimpleContainer {
 	return ButtonWithID(-1, lbl, btntype, act)
 }
-var Selector = func(opt []string, mult bool) Collection {
+var Selector = func(opt []string, mult bool) container.SimpleContainer {
 	return SelectorWithID(-1, opt, mult)
 }
+
+// components & elements
+type TextElement = text.Text
+type RadioElement = radio.Radio
+type InputElement = input.Input
+type ButtonElement = button.Button
+type SelectorElement = selector.Selector
 
 // component types
 type ContainerType = utils.ContainerType
 
-var SimpleContainer = utils.SimpleContainer
 var VerticalContainer = utils.VerticalContainer
 var HorizontalContainer = utils.HorizontalContainer
 
@@ -70,3 +77,6 @@ type TextType = utils.TextType
 var NormalText = utils.NormalText
 var LabelText = utils.LabelText
 var DimmedText = utils.DimmedText
+
+// messages
+var Callback = utils.Callback

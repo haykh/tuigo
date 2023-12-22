@@ -24,7 +24,7 @@ type Selector struct {
 	disabled    map[string]struct{}
 }
 
-func New(id int, options []string, multiselect bool) obj.Collection {
+func New(id int, options []string, multiselect bool) container.SimpleContainer {
 	return container.NewSimpleContainer(true, Selector{
 		ElementWithID: obj.NewElementWithID(id),
 		multiselect:   multiselect,

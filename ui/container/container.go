@@ -12,11 +12,11 @@ var (
 	unfocusedStyle = style.Copy()
 )
 
-func View(focused bool, containerType utils.ContainerType, contents ...string) string {
+func ViewComplex(focused bool, containerType utils.ContainerType, contents ...string) string {
 	var focus_style lipgloss.Style
 	if focused {
 		focus_style = focusedStyle
-		if theme.DEBUG_STYLE {
+		if theme.DEBUG_MODE {
 			focus_style = focus_style.Copy().Border(lipgloss.NormalBorder())
 		}
 	} else {
@@ -33,6 +33,19 @@ func View(focused bool, containerType utils.ContainerType, contents ...string) s
 			contents...,
 		))
 	}
+}
+
+func ViewSimple(focused bool, content string) string {
+	var focus_style lipgloss.Style
+	if focused {
+		focus_style = focusedStyle
+		if theme.DEBUG_MODE {
+			focus_style = focus_style.Copy().Border(lipgloss.NormalBorder())
+		}
+	} else {
+		focus_style = unfocusedStyle
+	}
+	return focus_style.Render(content)
 }
 
 func ControlView(controls ...string) string {

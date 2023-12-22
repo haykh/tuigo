@@ -9,15 +9,18 @@ import (
 )
 
 func main() {
+	type Btn1Msg struct{}
+	// type StateUpdatedMsg struct{}
+
 	backend := tuigo.Backend{
 		States: []tuigo.AppState{"initial", "final"},
 		Constructors: map[tuigo.AppState]tuigo.Constructor{
-			"initial": func(tuigo.Collection) tuigo.Collection {
+			"initial": func(tuigo.Window) tuigo.Window {
 				container1 := tuigo.Container(
 					true,
 					tuigo.VerticalContainer,
-					tuigo.Button("button1", tuigo.SimpleBtn, nil),
-					tuigo.Radio("radio1"),
+					tuigo.Button("button1", tuigo.SimpleBtn, Btn1Msg{}),
+					tuigo.RadioWithID(1, "radio1"),
 					tuigo.Text("label1", tuigo.NormalText),
 					tuigo.Input("input2", "<default>", "<placeholder>", tuigo.PathInput),
 				)
@@ -40,12 +43,12 @@ func main() {
 					tuigo.Button("button6", tuigo.SimpleBtn, nil),
 					tuigo.Selector([]string{"item1", "item2", "item3"}, true),
 					tuigo.Input("input1", "<default>", "<placeholder>", tuigo.TextInput),
-					tuigo.Button("button9", tuigo.AcceptBtn, nil),
+					tuigo.ButtonWithID(9, "button9", tuigo.AcceptBtn, nil),
 					container3,
 				)
 				return container
 			},
-			"final": func(prev tuigo.Collection) tuigo.Collection {
+			"final": func(prev tuigo.Window) tuigo.Window {
 				return tuigo.Container(
 					true,
 					tuigo.VerticalContainer,
@@ -55,7 +58,21 @@ func main() {
 				)
 			},
 		},
-		Finalizer: func(containers map[tuigo.AppState]tuigo.Collection) tuigo.Collection {
+		Updaters: map[tuigo.AppState]tuigo.Updater{
+			"initial": func(window tuigo.Window, msg tea.Msg) (tuigo.Window, tea.Cmd) {
+				// switch msg.(type) {
+				// case Btn1Msg:
+				// 	radio1_cont, radio1 := container.GetElementByID(1)
+				// 	radio1 = radio1.(tuigo.RadioElement).Toggle()
+				// 	radio1_cont
+				// 	// radio1 = (*(radio1.(radio.Radio))).Toggle()
+				// 	// button9 := container.GetElementByID(9)
+				// 	return container, tuigo.Callback(StateUpdatedMsg{})
+				// }
+				return window, nil
+			},
+		},
+		Finalizer: func(containers map[tuigo.AppState]tuigo.Window) tuigo.Window {
 			return tuigo.Container(
 				false, tuigo.VerticalContainer,
 				tuigo.Text("app finalized", tuigo.NormalText),

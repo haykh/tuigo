@@ -27,7 +27,7 @@ func main() {
 	backend := tuigo.Backend{
 		States: []tuigo.AppState{"food", "customizations"},
 		Constructors: map[tuigo.AppState]tuigo.Constructor{
-			"food": func(tuigo.Collection) tuigo.Collection {
+			"food": func(tuigo.Window) tuigo.Window {
 				title := tuigo.Text("shell foods : pick food & beverage options", tuigo.NormalText)
 				food_options := []string{}
 				for item, price := range food_menu {
@@ -50,9 +50,11 @@ func main() {
 					true, tuigo.VerticalContainer, title, food_container, drinks_container,
 				)
 			},
-			"customizations": func(prev tuigo.Collection) tuigo.Collection {
-				selected_food_options := prev.GetElementByID(1).Data().([]string)
-				selected_drinks_options := prev.GetElementByID(2).Data().([]string)
+			"customizations": func(prev tuigo.Window) tuigo.Window {
+				_, selected_food_options_acc := prev.GetElementByID(1)
+				selected_food_options := selected_food_options_acc.Data().([]string)
+				_, selected_drinks_options_acc := prev.GetElementByID(2)
+				selected_drinks_options := selected_drinks_options_acc.Data().([]string)
 				item_str := "items:\n\n"
 				var price float32 = 0.0
 				for _, option := range append(selected_food_options, selected_drinks_options...) {
@@ -76,11 +78,14 @@ func main() {
 				return tuigo.Container(true, tuigo.VerticalContainer, container, subtotal)
 			},
 		},
-		Finalizer: func(containers map[tuigo.AppState]tuigo.Collection) tuigo.Collection {
+		Finalizer: func(containers map[tuigo.AppState]tuigo.Window) tuigo.Window {
 			prev := containers["customizations"]
-			utencils := prev.GetElementByID(1).Data().(bool)
-			pickup_or_delivery := prev.GetElementByID(2).Data().(string)
-			order := prev.GetElementByID(3).Data().(string)
+			_, utencils_acc := prev.GetElementByID(1)
+			utencils := utencils_acc.Data().(bool)
+			_, pickup_or_delivery_acc := prev.GetElementByID(2)
+			pickup_or_delivery := pickup_or_delivery_acc.Data().(string)
+			_, order_acc := prev.GetElementByID(3)
+			order := order_acc.Data().(string)
 			items := []string{}
 			for _, line := range strings.Split(order, "\n") {
 				if len(line) > 0 && line[0] == '+' {
@@ -92,7 +97,8 @@ func main() {
 			}
 			var text string
 			items_txt := strings.Join(items, ", ")
-			items_txt = strings.Replace(items_txt, ",", " and", strings.LastIndex(items_txt, ","))
+			ind := strings.LastIndex(items_txt, ",")
+			items_txt = items_txt + strings.Replace(items_txt[ind:], ",", " and", 1)
 			if pickup_or_delivery == "pickup" {
 				text = fmt.Sprintf("Your order of %s will soon be ready for pickup", items_txt)
 			} else {

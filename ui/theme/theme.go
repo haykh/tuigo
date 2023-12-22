@@ -3,7 +3,7 @@ package theme
 import "github.com/charmbracelet/lipgloss"
 
 var (
-	DEBUG_STYLE = false
+	DEBUG_MODE = false
 )
 
 var (
