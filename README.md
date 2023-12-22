@@ -29,17 +29,18 @@ see [`examples/`](examples/) for usage examples of `tuigo` for building applicat
 classDiagram
   class tuigo {
     <<package>>
-    Container :: Func[bool, ContainerType, ...Element] -> Element
-    Button :: Func[string, ButtonType, Msg] -> Element
-    Selector :: Func[List~string~] -> Element
-    Input :: Func[string, string, string, InputType] -> Element
-    Radio :: Func[string] -> Element
+    Container :: Func[bool, ContainerType, ...Element] -> ComplexContainer
+    Button :: Func[string, ButtonType, Msg] -> SimpleContainer
+    Selector :: Func[List~string~] -> SimpleContainer
+    Input :: Func[string, string, string, InputType] -> SimpleContainer
+    Radio :: Func[string] -> SimpleContainer
   }
 
   class Backend["tuigo.Backend"]{
     States :: List~AppState~
-    Constructors :: Map[AppState]~Func[Collection]->Collection~
-    Finalizer :: Func[Map[AppState]~Collection~]->Collection
+    Constructors :: Map[AppState]:Func[Window]->Window
+    Updaters :: Map[AppState]:Func[Window,tea.Msg]->Window,tea.Cmd
+    Finalizer :: Func[Map[AppState]:Window]->Window
   }
 
   class NewApp["tuigo"] {
@@ -47,6 +48,7 @@ classDiagram
     App :: Func[Backend, bool] -> app.App
   }
   note for Backend "AppState = string"
+  note for Backend "Window = Collection"
 
   class tea["tea 'github.com/charmbracelet/bubbletea'"] {
     <<package>>
@@ -57,6 +59,93 @@ classDiagram
   NewApp --o tea
   Backend --o NewApp
 ```
+### containers
+
+```mermaid
+%%{
+  init: {
+    'theme': 'base',
+    'themeVariables': {
+        'fontFamily': 'JetBrainsMono Nerd Font, BlexMono Nerd Font, Roboto Mono, Source Code Pro, monospace',
+        'primaryColor': '#4C2FAD',
+        'primaryTextColor': '#FFFFFF',
+        'lineColor': '#E840E0',
+        'primaryBorderColor': '#E840E0'
+      }
+    }
+}%%
+classDiagram
+  class Accessor {
+    <<interface>>
+    ID() int
+    Data() interface<>
+  }
+
+  class Element {
+    <<interface>>
+    View(bool) string
+    Update(tea.Msg) (Element, tea.Cmd)
+  }
+
+  class AbstractComponent {
+    <<interface>>
+    Hidden() bool
+    Focusable() bool
+    Focused() bool
+  }
+
+  class Component {
+    <<interface>>
+    Hide() Component
+    Unhide() Component
+    Focus() Component
+    FocusFromStart() Component
+    FocusFromEnd() Component
+    Blur() Component
+    FocusNext() (Component, tea.Cmd)
+    FocusPrev() (Component, tea.Cmd)
+    GetElementByID(int) (Component, Accessor)
+  }
+  Element <|-- Component
+  AbstractComponent <|-- Component
+
+  class Collection {
+    <<interface>>
+    Type() utils.ContainerType
+    Components() List~Component~
+    AddComponents(...Component) Collection
+  }
+  Component <|-- Collection
+
+  class Wrapper {
+    <<interface>>
+    Element() Element
+  }
+  Component <|-- Wrapper
+
+  class Container {
+    -bool hidden
+    -bool focusable
+    -bool focused
+    -Func[Container] -> string render
+  }
+  AbstractComponent <|.. Container
+
+  class SimpleContainer {
+    -Element element
+  }
+
+  class ComplexContainer {
+    -ContainerType containerType
+    -List~Component~ components
+  }
+
+  Wrapper <|.. SimpleContainer
+  Container <|-- SimpleContainer
+  Collection <|.. ComplexContainer
+  Container <|-- ComplexContainer
+```
+
 ### elements
 
 ```mermaid
@@ -78,25 +167,27 @@ classDiagram
     ID() int
     Data() interface<>
   }
+
+  class Actor {
+    <<interface>>
+    Callback()
+  }
+
   class Element {
     <<interface>>
     View(bool) string
     Update(tea.Msg) (Element, tea.Cmd)
   }
-  class Collection {
-    <<interface>>
-    Elements() []Element
-    AddElements(...Element) Collection
-    Focusable() bool
-    Focused() bool
-    Focus() Collection
-    FocusFromStart() Collection
-    FocusFromEnd() Collection
-    Blur() Collection
-    FocusNext() (Collection, tea.Cmd)
-    FocusPrev() (Collection, tea.Cmd)
-    GetElementByID(int) Accessor
+
+  class ElementWithID {
+    -int id
   }
+
+  class ElementWithCallback {
+    -tea.Msg callback
+  }
+  ElementWithID ..|> Accessor
+  ElementWithCallback ..|> Actor
 
   class Button {
     -string label
@@ -105,12 +196,18 @@ classDiagram
     -tea.Msg action
     +Data() -> Button::npresses
   }
+  ElementWithID <|-- Button
+  ElementWithCallback <|-- Button
+  Element <|.. Button
 
   class TextInput {
     -InputType inputtype
     -textinput.Model model    
     +Data() -> TextInput::model.Value -> string
   }
+  ElementWithID <|-- TextInput
+  ElementWithCallback <|-- TextInput
+  Element <|.. TextInput
 
   class Radio {
 	  -string label
@@ -118,6 +215,9 @@ classDiagram
     +Toggle() -> Radio
     +Data() -> Radio::state
   }
+  ElementWithID <|-- Radio
+  ElementWithCallback <|-- Radio
+  Element <|.. Radio
 
   class Selector {
     -bool multiselect
@@ -125,8 +225,9 @@ classDiagram
     -List~string~ options
     -Map~string~ selected
     -Map~string~ disabled
-    +Disable(string) -> Selector
     +Enable(string) -> Selector
+    +Disable(string) -> Selector
+    +Disabled(string) -> bool
     +Toggle(string) -> Selector
     +Next() -> Selector
     +Prev() -> Selector
@@ -134,33 +235,19 @@ classDiagram
     +Cursor() -> int
     +Data() -> Selector::Selected -> List~string~
   }
+  Element <|.. Selector
+  ElementWithID <|-- Selector
+  ElementWithCallback <|-- Selector
 
   class Text {
     -string text
     -TextType texttype
     +Data() -> Text::text
+    +Set(string) -> Text
   }
-
-  class Container {
-    -bool focusable
-    -bool focused
-    -ContainerType conttype
-    -List~Element~ elements
-    -Func[Container] -> string render
-  }
-
-  Element <|-- Button
-  Accessor <|-- Button
-  Element <|-- TextInput
-  Accessor <|-- TextInput
-  Element <|-- Radio
-  Accessor <|-- Radio
-  Element <|-- Selector
-  Accessor <|-- Selector
-  Element <|-- Text
-  Accessor <|-- Text
-  Element <|-- Container
-  Collection <|-- Container
+  ElementWithID <|-- Text
+  ElementWithCallback <|-- Text
+  Element <|.. Text
 ```
 
 ## TODO
@@ -168,9 +255,11 @@ classDiagram
 - [x] app backend
 - [x] grid structure
 - [x] easily accessible components
-- [ ] update components based on others
+- [x] update components based on others
 - [ ] unit tests
   - [x] elements
+  - [x] containers
+  - [ ] calbacks
   - [ ] backend
   - [ ] app
 - [ ] customizable theme

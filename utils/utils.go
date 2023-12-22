@@ -10,8 +10,7 @@ import (
 type ContainerType int
 
 const (
-	SimpleContainer ContainerType = iota
-	VerticalContainer
+	VerticalContainer ContainerType = iota
 	HorizontalContainer
 )
 
@@ -42,27 +41,44 @@ const (
 	TextInput
 )
 
-// text types
-
+// messages
 func Callback(msg tea.Msg) tea.Cmd {
 	return func() tea.Msg {
 		return msg
 	}
 }
 
-func DebugCmd(msg string) tea.Cmd {
+type TargetedMsg struct {
+	id     int
+	action interface{}
+}
+
+func (msg TargetedMsg) ID() int {
+	return msg.id
+}
+
+func (msg TargetedMsg) Action() interface{} {
+	return msg.action
+}
+
+func TargetCmd(id int, action interface{}) tea.Cmd {
 	return func() tea.Msg {
-		return DebugMsg{msg}
+		return TargetedMsg{id, action}
 	}
 }
 
-// messages
 type DebugMsg struct {
 	msg string
 }
 
 func (dbg DebugMsg) String() string {
 	return dbg.msg
+}
+
+func DebugCmd(msg string) tea.Cmd {
+	return func() tea.Msg {
+		return DebugMsg{msg}
+	}
 }
 
 type FocusNextMsg struct{}

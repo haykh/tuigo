@@ -9,24 +9,13 @@ type Accessor interface {
 	Data() interface{}
 }
 
+type Actor interface {
+	Callback() tea.Msg
+}
+
 type Element interface {
 	View(bool) string
 	Update(tea.Msg) (Element, tea.Cmd)
-}
-
-type Collection interface {
-	Element
-	Elements() []Element
-	AddElements(...Element) Collection
-	Focusable() bool
-	Focused() bool
-	Focus() Collection
-	FocusFromStart() Collection
-	FocusFromEnd() Collection
-	Blur() Collection
-	FocusNext() (Collection, tea.Cmd)
-	FocusPrev() (Collection, tea.Cmd)
-	GetElementByID(int) Accessor
 }
 
 type ElementWithID struct {
@@ -39,4 +28,16 @@ func NewElementWithID(id int) ElementWithID {
 
 func (e ElementWithID) ID() int {
 	return e.id
+}
+
+type ElementWithCallback struct {
+	callback tea.Msg
+}
+
+func NewElementWithCallback(callback tea.Msg) ElementWithCallback {
+	return ElementWithCallback{callback: callback}
+}
+
+func (e ElementWithCallback) Callback() tea.Msg {
+	return e.callback
 }
