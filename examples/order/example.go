@@ -24,8 +24,10 @@ var drinks_menu = map[string]float32{
 }
 
 func main() {
+	type pickupOrDeliveryMsg struct{}
+
 	backend := tuigo.Backend{
-		States: []tuigo.AppState{"food", "customizations"},
+		States: []tuigo.AppState{"food", "order"},
 		Constructors: map[tuigo.AppState]tuigo.Constructor{
 			"food": func(tuigo.Window) tuigo.Window {
 				title := tuigo.Text("shell foods : pick food & beverage options", tuigo.NormalText)
@@ -33,7 +35,7 @@ func main() {
 				for item, price := range food_menu {
 					food_options = append(food_options, fmt.Sprintf("%s ($%.2f)", item, price))
 				}
-				food_selector := tuigo.SelectorWithID(1, food_options, true)
+				food_selector := tuigo.SelectorWithID(1, food_options, true, nil)
 				food_container := tuigo.Container(
 					true, tuigo.VerticalContainer, tuigo.Text("Food", tuigo.NormalText), food_selector,
 				)
@@ -42,7 +44,7 @@ func main() {
 				for item, price := range drinks_menu {
 					drinks_options = append(drinks_options, fmt.Sprintf("%s ($%.2f)", item, price))
 				}
-				drinks_selector := tuigo.SelectorWithID(2, drinks_options, true)
+				drinks_selector := tuigo.SelectorWithID(2, drinks_options, true, nil)
 				drinks_container := tuigo.Container(
 					true, tuigo.VerticalContainer, tuigo.Text("Drinks", tuigo.NormalText), drinks_selector,
 				)
@@ -50,7 +52,7 @@ func main() {
 					true, tuigo.VerticalContainer, title, food_container, drinks_container,
 				)
 			},
-			"customizations": func(prev tuigo.Window) tuigo.Window {
+			"order": func(prev tuigo.Window) tuigo.Window {
 				_, selected_food_options_acc := prev.GetElementByID(1)
 				selected_food_options := selected_food_options_acc.Data().([]string)
 				_, selected_drinks_options_acc := prev.GetElementByID(2)
@@ -67,19 +69,49 @@ func main() {
 					}
 				}
 				subtotal := tuigo.Text(fmt.Sprintf("subtotal: $%.2f", price), tuigo.DimmedText)
-				utencils := tuigo.RadioWithID(1, "include utencils")
-				pickup_or_delivery := tuigo.SelectorWithID(2, []string{"pickup", "delivery"}, false)
+				utencils := tuigo.RadioWithID(1, "include utencils", nil)
+				pickup_or_delivery := tuigo.SelectorWithID(2, []string{"pickup", "delivery"}, false, pickupOrDeliveryMsg{})
+				address_entry := tuigo.InputWithID(4, "delivery address", "<address>", "<address>", tuigo.TextInput, nil).Hide()
 				container := tuigo.Container(
 					true,
 					tuigo.HorizontalContainer,
 					tuigo.TextWithID(3, item_str, tuigo.NormalText),
-					tuigo.Container(true, tuigo.VerticalContainer, utencils, pickup_or_delivery),
+					tuigo.Container(true, tuigo.VerticalContainer, utencils, pickup_or_delivery, address_entry),
 				)
 				return tuigo.Container(true, tuigo.VerticalContainer, container, subtotal)
 			},
 		},
+		Updaters: map[tuigo.AppState]tuigo.Updater{
+			"order": func(window tuigo.Window, msg tea.Msg) (tuigo.Window, tea.Cmd) {
+				hide_address := tuigo.TgtCmd(
+					4,
+					func(cont tuigo.Wrapper, inp tuigo.Accessor) (tuigo.Wrapper, tuigo.Accessor) {
+						return cont.Hide().(tuigo.Wrapper), inp
+					},
+				)
+				unhide_address := tuigo.TgtCmd(
+					4,
+					func(cont tuigo.Wrapper, inp tuigo.Accessor) (tuigo.Wrapper, tuigo.Accessor) {
+						return cont.Unhide().(tuigo.Wrapper), inp
+					},
+				)
+				switch msg.(type) {
+				case pickupOrDeliveryMsg:
+					_, pickup_or_delivery_acc := window.GetElementByID(2)
+					pickup_or_delivery := pickup_or_delivery_acc.Data()
+					if pickup_or_delivery != nil {
+						if pickup_or_delivery.(string) == "delivery" {
+							return window, unhide_address
+						} else {
+							return window, hide_address
+						}
+					}
+				}
+				return window, nil
+			},
+		},
 		Finalizer: func(containers map[tuigo.AppState]tuigo.Window) tuigo.Window {
-			prev := containers["customizations"]
+			prev := containers["order"]
 			_, utencils_acc := prev.GetElementByID(1)
 			utencils := utencils_acc.Data().(bool)
 			_, pickup_or_delivery_acc := prev.GetElementByID(2)
@@ -102,7 +134,9 @@ func main() {
 			if pickup_or_delivery == "pickup" {
 				text = fmt.Sprintf("Your order of %s will soon be ready for pickup", items_txt)
 			} else {
-				text = fmt.Sprintf("Your order of %s is on its way", items_txt)
+				_, address_acc := prev.GetElementByID(4)
+				address := address_acc.Data().(string)
+				text = fmt.Sprintf("Your order of %s\nis on its way to %s", items_txt, address)
 			}
 			return tuigo.Container(
 				false,
@@ -111,7 +145,7 @@ func main() {
 			)
 		},
 	}
-	p := tea.NewProgram(tuigo.App(backend, true))
+	p := tea.NewProgram(tuigo.App(backend, false))
 	if _, err := p.Run(); err != nil {
 		fmt.Printf("error: %v", err)
 		os.Exit(1)

@@ -23,6 +23,9 @@ func NewComplexContainer(
 	components ...Component,
 ) ComplexContainer {
 	render := func(self Component) string {
+		if self.Hidden() {
+			return ""
+		}
 		el_views := []string{}
 		switch self := self.(type) {
 		case ComplexContainer:
@@ -30,9 +33,9 @@ func NewComplexContainer(
 				el_views = append(el_views, "")
 			} else {
 				for _, comp := range self.Components() {
-					if !comp.Hidden() {
-						el_views = append(el_views, comp.View(self.Focused()))
-					}
+					// if !comp.Hidden() {
+					el_views = append(el_views, comp.View(self.Focused()))
+					// }
 				}
 			}
 		default:
@@ -54,6 +57,18 @@ func NewComplexContainer(
 
 // implementing Element
 func (cc ComplexContainer) Update(msg tea.Msg) (obj.Element, tea.Cmd) {
+	// targeted message ignores focus
+	switch msg := msg.(type) {
+	case utils.TargetedMsg:
+		var cmds []tea.Cmd
+		for c, component := range cc.components {
+			comp, cmd := component.Update(msg)
+			cc.components[c] = comp.(Component)
+			cmds = append(cmds, cmd)
+		}
+		return cc, tea.Batch(cmds...)
+	}
+	// messages that require focus
 	if cc.Focusable() && cc.Focused() {
 		switch msg.(type) {
 		case utils.FocusNextMsg:
