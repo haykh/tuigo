@@ -7,7 +7,7 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/haykh/tuigo/debug"
 	"github.com/haykh/tuigo/keys"
-	"github.com/haykh/tuigo/obj/button"
+	"github.com/haykh/tuigo/obj/components/button"
 	"github.com/haykh/tuigo/obj/container"
 	"github.com/haykh/tuigo/ui"
 	"github.com/haykh/tuigo/ui/theme"
@@ -124,6 +124,10 @@ func (a App) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case utils.PrevStateMsg:
 		a.debugger.Log("Prev")
 		return a.PrevState(), nil
+	case utils.TargetedMsg:
+		cont, cmd := a.windows[a.activeState].Update(msg)
+		a.windows[a.activeState] = cont.(Window)
+		return a, cmd
 	case utils.DebugMsg:
 		a.debugger.Log(msg.String())
 		return a, nil
