@@ -31,19 +31,19 @@ var SelectorWithID = selector.New
 
 var Container = container.New
 
-var Text = func(txt string, txttype TextType) Element {
+var Text = func(txt string, txttype TextType) Collection {
 	return TextWithID(-1, txt, txttype)
 }
-var Radio = func(lbl string) Element {
+var Radio = func(lbl string) Collection {
 	return RadioWithID(-1, lbl)
 }
-var Input = func(lbl, def, plc string, inptype InputType) Element {
+var Input = func(lbl, def, plc string, inptype InputType) Collection {
 	return InputWithID(-1, lbl, def, plc, inptype)
 }
-var Button = func(lbl string, btntype ButtonType, act tea.Msg) Element {
+var Button = func(lbl string, btntype ButtonType, act tea.Msg) Collection {
 	return ButtonWithID(-1, lbl, btntype, act)
 }
-var Selector = func(opt []string, mult bool) Element {
+var Selector = func(opt []string, mult bool) Collection {
 	return SelectorWithID(-1, opt, mult)
 }
 

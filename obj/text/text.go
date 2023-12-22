@@ -17,7 +17,7 @@ type Text struct {
 	txt      string
 }
 
-func New(id int, txt string, texttype utils.TextType) obj.Element {
+func New(id int, txt string, texttype utils.TextType) obj.Collection {
 	return container.NewSimpleContainer(false, Text{
 		ElementWithID: obj.NewElementWithID(id),
 		texttype:      texttype,

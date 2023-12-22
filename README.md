@@ -29,11 +29,11 @@ see [`examples/`](examples/) for usage examples of `tuigo` for building applicat
 classDiagram
   class tuigo {
     <<package>>
-    Container :: Func[bool, ContainerType, ...Element] -> Element
-    Button :: Func[string, ButtonType, Msg] -> Element
-    Selector :: Func[List~string~] -> Element
-    Input :: Func[string, string, string, InputType] -> Element
-    Radio :: Func[string] -> Element
+    Container :: Func[bool, ContainerType, ...Element] -> Collection
+    Button :: Func[string, ButtonType, Msg] -> Collection
+    Selector :: Func[List~string~] -> Collection
+    Input :: Func[string, string, string, InputType] -> Collection
+    Radio :: Func[string] -> Collection
   }
 
   class Backend["tuigo.Backend"]{
@@ -87,6 +87,8 @@ classDiagram
     <<interface>>
     Elements() []Element
     AddElements(...Element) Collection
+	  Hidden() bool
+	  Hide() Collection
     Focusable() bool
     Focused() bool
     Focus() Collection

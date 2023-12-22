@@ -30,7 +30,7 @@ func NewTextinputModel(label, def, placeholder string) textinput.Model {
 	return m
 }
 
-func New(id int, label, def, placeholder string, inputtype utils.InputType) obj.Element {
+func New(id int, label, def, placeholder string, inputtype utils.InputType) obj.Collection {
 	m := NewTextinputModel(label, def, placeholder)
 	if inputtype == utils.PathInput {
 		m.ShowSuggestions = true
