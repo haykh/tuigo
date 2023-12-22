@@ -11,7 +11,9 @@ type TestMsg struct{}
 
 func TestRadio(t *testing.T) {
 	radio := Radio{
-		obj.NewElementWithID(0), "test", false,
+		obj.NewElementWithID(0),
+		obj.NewElementWithCallback(nil),
+		"test", false,
 	}
 	{
 		r1, _ := radio.Update(tea.KeyMsg{Type: tea.KeySpace})

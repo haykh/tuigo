@@ -10,7 +10,8 @@ import (
 
 func main() {
 	type Btn1Msg struct{}
-	// type StateUpdatedMsg struct{}
+	type Btn9Msg struct{}
+	type Inp1Msg struct{}
 
 	backend := tuigo.Backend{
 		States: []tuigo.AppState{"initial", "final"},
@@ -20,9 +21,9 @@ func main() {
 					true,
 					tuigo.VerticalContainer,
 					tuigo.Button("button1", tuigo.SimpleBtn, Btn1Msg{}),
-					tuigo.RadioWithID(1, "radio1"),
+					tuigo.RadioWithID(1, "radio1", nil),
 					tuigo.Text("label1", tuigo.NormalText),
-					tuigo.Input("input2", "<default>", "<placeholder>", tuigo.PathInput),
+					tuigo.Input("input2", "<default>", "<placeholder>", tuigo.PathInput, nil),
 				)
 
 				container2 := tuigo.Container(
@@ -30,7 +31,7 @@ func main() {
 					tuigo.VerticalContainer,
 					tuigo.Text("text2", tuigo.DimmedText),
 					tuigo.Button("hidden_button4", tuigo.SimpleBtn, nil).Hide(),
-					tuigo.Selector([]string{"item1", "item2", "item3", "item4", "item5"}, false),
+					tuigo.SelectorWithID(5, []string{"item1", "item2", "item3", "item4", "item5"}, false, nil),
 					tuigo.Text("text3", tuigo.DimmedText),
 				)
 
@@ -39,11 +40,11 @@ func main() {
 				container := tuigo.Container(
 					true,
 					tuigo.VerticalContainer,
-					tuigo.Text("label2", tuigo.NormalText),
+					tuigo.TextWithID(2, "label2", tuigo.NormalText),
 					tuigo.Button("button6", tuigo.SimpleBtn, nil),
-					tuigo.Selector([]string{"item1", "item2", "item3"}, true),
-					tuigo.Input("input1", "<default>", "<placeholder>", tuigo.TextInput),
-					tuigo.ButtonWithID(9, "button9", tuigo.AcceptBtn, nil),
+					tuigo.Selector([]string{"item1", "item2", "item3"}, true, nil),
+					tuigo.InputWithID(3, "input1", "<default>", "<placeholder>", tuigo.TextInput, Inp1Msg{}),
+					tuigo.ButtonWithID(9, "button9", tuigo.AcceptBtn, Btn9Msg{}),
 					container3,
 				)
 				return container
@@ -53,22 +54,44 @@ func main() {
 					true,
 					tuigo.VerticalContainer,
 					tuigo.Button("button9", tuigo.SimpleBtn, nil),
-					tuigo.Input("input3", "<default>", "<placeholder>", tuigo.TextInput),
-					tuigo.Radio("radio2"),
+					tuigo.Input("input3", "<default>", "<placeholder>", tuigo.TextInput, nil),
+					tuigo.Radio("radio2", nil),
 				)
 			},
 		},
 		Updaters: map[tuigo.AppState]tuigo.Updater{
 			"initial": func(window tuigo.Window, msg tea.Msg) (tuigo.Window, tea.Cmd) {
-				// switch msg.(type) {
-				// case Btn1Msg:
-				// 	radio1_cont, radio1 := container.GetElementByID(1)
-				// 	radio1 = radio1.(tuigo.RadioElement).Toggle()
-				// 	radio1_cont
-				// 	// radio1 = (*(radio1.(radio.Radio))).Toggle()
-				// 	// button9 := container.GetElementByID(9)
-				// 	return container, tuigo.Callback(StateUpdatedMsg{})
-				// }
+				toggle_radio1 := tuigo.TgtCmd(
+					1,
+					func(cont tuigo.Wrapper, radio tuigo.Accessor) (tuigo.Wrapper, tuigo.Accessor) {
+						return cont, radio.(tuigo.RadioElement).Toggle()
+					})
+				en_dis_it3_in_sel5 := tuigo.TgtCmd(
+					5,
+					func(cont tuigo.Wrapper, selector tuigo.Accessor) (tuigo.Wrapper, tuigo.Accessor) {
+						el := selector.(tuigo.SelectorElement)
+						if el.Disabled("item3") {
+							return cont, el.Enable("item3")
+						} else {
+							return cont, el.Disable("item3")
+						}
+					})
+
+				switch msg.(type) {
+				case Btn1Msg:
+					return window, toggle_radio1
+				case Btn9Msg:
+					return window, tea.Batch(toggle_radio1, en_dis_it3_in_sel5)
+				case Inp1Msg:
+					_, inp_acc := window.GetElementByID(3)
+					typed_text := inp_acc.Data().(string)
+					return window, tuigo.TgtCmd(
+						2,
+						func(cont tuigo.Wrapper, text tuigo.Accessor) (tuigo.Wrapper, tuigo.Accessor) {
+							el := text.(tuigo.TextElement)
+							return cont, el.Set("you typed: " + typed_text)
+						})
+				}
 				return window, nil
 			},
 		},

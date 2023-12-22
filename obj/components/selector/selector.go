@@ -12,11 +12,13 @@ import (
 	"github.com/haykh/tuigo/utils"
 )
 
-var _ obj.Element = (*Selector)(nil)
 var _ obj.Accessor = (*Selector)(nil)
+var _ obj.Actor = (*Selector)(nil)
+var _ obj.Element = (*Selector)(nil)
 
 type Selector struct {
 	obj.ElementWithID
+	obj.ElementWithCallback
 	multiselect bool
 	cursor      int
 	options     []string
@@ -24,19 +26,25 @@ type Selector struct {
 	disabled    map[string]struct{}
 }
 
-func New(id int, options []string, multiselect bool) container.SimpleContainer {
+func New(id int, options []string, multiselect bool, callback tea.Msg) container.SimpleContainer {
 	return container.NewSimpleContainer(true, Selector{
-		ElementWithID: obj.NewElementWithID(id),
-		multiselect:   multiselect,
-		cursor:        0,
-		options:       options,
-		selected:      map[string]struct{}{},
-		disabled:      map[string]struct{}{},
+		ElementWithID:       obj.NewElementWithID(id),
+		ElementWithCallback: obj.NewElementWithCallback(callback),
+		multiselect:         multiselect,
+		cursor:              0,
+		options:             options,
+		selected:            map[string]struct{}{},
+		disabled:            map[string]struct{}{},
 	})
 }
 
+// implementing Element
+func (s Selector) View(focused bool) string {
+	return ui.SelectorView(focused, s.multiselect, s.cursor, s.options, s.selected, s.disabled)
+}
+
 func (s Selector) Update(msg tea.Msg) (obj.Element, tea.Cmd) {
-	var cmd tea.Cmd
+	cmds := []tea.Cmd{}
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
 		switch {
@@ -46,16 +54,27 @@ func (s Selector) Update(msg tea.Msg) (obj.Element, tea.Cmd) {
 			s = s.Next()
 		case key.Matches(msg, keys.Keys.Space):
 			s = s.Toggle()
-			cmd = utils.DebugCmd(fmt.Sprintf("%s toggled", s.options[s.cursor]))
+			cmds = append(cmds, utils.Callback(s.Callback()))
+			cmds = append(cmds, utils.DebugCmd(fmt.Sprintf("%s toggled", s.options[s.cursor])))
 		}
 	}
-	return s, cmd
+	return s, tea.Batch(cmds...)
 }
 
-func (s Selector) View(focused bool) string {
-	return ui.SelectorView(focused, s.multiselect, s.cursor, s.options, s.selected, s.disabled)
+// implementing Accessor
+func (m Selector) Data() interface{} {
+	if m.multiselect {
+		return m.Selected()
+	} else {
+		if len(m.Selected()) == 0 {
+			return nil
+		} else {
+			return m.Selected()[0]
+		}
+	}
 }
 
+// special
 func (s Selector) Disable(opt string) Selector {
 	s.disabled[opt] = struct{}{}
 	delete(s.selected, opt)
@@ -65,6 +84,11 @@ func (s Selector) Disable(opt string) Selector {
 func (s Selector) Enable(opt string) Selector {
 	delete(s.disabled, opt)
 	return s
+}
+
+func (s Selector) Disabled(opt string) bool {
+	_, ok := s.disabled[opt]
+	return ok
 }
 
 func (s Selector) Toggle() Selector {
@@ -109,12 +133,4 @@ func (m Selector) Selected() []string {
 
 func (m Selector) Cursor() int {
 	return m.cursor
-}
-
-func (m Selector) Data() interface{} {
-	if m.multiselect {
-		return m.Selected()
-	} else {
-		return m.Selected()[0]
-	}
 }

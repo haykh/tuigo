@@ -1,6 +1,7 @@
 package input
 
 import (
+	"fmt"
 	"os"
 
 	"github.com/charmbracelet/bubbles/textinput"
@@ -12,11 +13,13 @@ import (
 	"github.com/haykh/tuigo/utils"
 )
 
-var _ obj.Element = (*Input)(nil)
 var _ obj.Accessor = (*Input)(nil)
+var _ obj.Actor = (*Input)(nil)
+var _ obj.Element = (*Input)(nil)
 
 type Input struct {
 	obj.ElementWithID
+	obj.ElementWithCallback
 	inputtype utils.InputType
 	model     textinput.Model
 }
@@ -30,7 +33,7 @@ func NewTextinputModel(label, def, placeholder string) textinput.Model {
 	return m
 }
 
-func New(id int, label, def, placeholder string, inputtype utils.InputType) container.SimpleContainer {
+func New(id int, label, def, placeholder string, inputtype utils.InputType, callback tea.Msg) container.SimpleContainer {
 	m := NewTextinputModel(label, def, placeholder)
 	if inputtype == utils.PathInput {
 		m.ShowSuggestions = true
@@ -39,12 +42,14 @@ func New(id int, label, def, placeholder string, inputtype utils.InputType) cont
 		m.KeyMap.PrevSuggestion = keys.Keys.Up
 	}
 	return container.NewSimpleContainer(true, Input{
-		ElementWithID: obj.NewElementWithID(id),
-		inputtype:     inputtype,
-		model:         m,
+		ElementWithID:       obj.NewElementWithID(id),
+		ElementWithCallback: obj.NewElementWithCallback(callback),
+		inputtype:           inputtype,
+		model:               m,
 	})
 }
 
+// implementing Element
 func (ti Input) Update(msg tea.Msg) (obj.Element, tea.Cmd) {
 	if ti.inputtype == utils.PathInput {
 		// update suggestions
@@ -67,10 +72,16 @@ func (ti Input) Update(msg tea.Msg) (obj.Element, tea.Cmd) {
 			ti.model.SetSuggestions(suggestions)
 		}
 	}
-
-	var cmd tea.Cmd
-	ti.model, cmd = ti.model.Update(msg)
-	return ti, cmd
+	cmds := []tea.Cmd{}
+	switch msg := msg.(type) {
+	case tea.KeyMsg:
+		var cmd tea.Cmd
+		ti.model, cmd = ti.model.Update(msg)
+		cmds = append(cmds, cmd)
+		cmds = append(cmds, utils.Callback(ti.Callback()))
+		cmds = append(cmds, utils.DebugCmd(fmt.Sprintf("input: %s", ti.model.Value())))
+	}
+	return ti, tea.Batch(cmds...)
 }
 
 func (ti Input) View(focused bool) string {
@@ -82,6 +93,7 @@ func (ti Input) View(focused bool) string {
 	return ui.PathInputView(focused, ti.model)
 }
 
+// implementing Accessor
 func (ti Input) Data() interface{} {
 	return ti.model.Value()
 }

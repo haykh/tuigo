@@ -9,6 +9,10 @@ type Accessor interface {
 	Data() interface{}
 }
 
+type Actor interface {
+	Callback() tea.Msg
+}
+
 type Element interface {
 	View(bool) string
 	Update(tea.Msg) (Element, tea.Cmd)
@@ -24,4 +28,16 @@ func NewElementWithID(id int) ElementWithID {
 
 func (e ElementWithID) ID() int {
 	return e.id
+}
+
+type ElementWithCallback struct {
+	callback tea.Msg
+}
+
+func NewElementWithCallback(callback tea.Msg) ElementWithCallback {
+	return ElementWithCallback{callback: callback}
+}
+
+func (e ElementWithCallback) Callback() tea.Msg {
+	return e.callback
 }

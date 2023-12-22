@@ -25,8 +25,6 @@ func ComplexContainerView(focused bool, containerType utils.ContainerType, conte
 		if content == "" {
 			if theme.DEBUG_MODE {
 				contents[i] = "dummy"
-			} else {
-				panic("ComplexContainer must not be empty")
 			}
 		}
 	}
@@ -37,8 +35,6 @@ func SimpleContainerView(focused bool, content string) string {
 	if content == "" {
 		if theme.DEBUG_MODE {
 			content = "dummy"
-		} else {
-			panic("SimpleContainer must not be empty")
 		}
 	}
 	return container.ViewSimple(focused, content)
