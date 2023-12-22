@@ -120,6 +120,63 @@ func TestContainer(t *testing.T) {
 	}
 }
 
+func TestContainerHide(t *testing.T) {
+	container := New(
+		true,
+		utils.VerticalContainer,
+		New(true, utils.VerticalContainer,
+			New(true, utils.SimpleContainer),
+			New(true, utils.HorizontalContainer,
+				New(false, utils.SimpleContainer),
+				New(true, utils.SimpleContainer).Hide(),
+				New(true, utils.VerticalContainer,
+					New(true, utils.SimpleContainer),
+					New(true, utils.SimpleContainer),
+					New(true, utils.SimpleContainer),
+				),
+			),
+			New(false, utils.SimpleContainer),
+		),
+		New(true,
+			utils.HorizontalContainer,
+			New(false, utils.SimpleContainer),
+			New(false, utils.SimpleContainer),
+		),
+	).Focus().(Container)
+	newc, _ := container.FocusNext()
+	container = newc.(Container)
+	focused_container := container.
+		Elements()[0].(Container).
+		Elements()[1].(Container).
+		Elements()[2].(Container).
+		Elements()[0].(Container)
+	hidden_container := container.
+		Elements()[0].(Container).
+		Elements()[1].(Container).
+		Elements()[1].(Container)
+	if !focused_container.Focused() || !hidden_container.Hidden() {
+		t.Errorf("expected container to be focused")
+	}
+	container = container.Blur().(Container)
+	container = container.FocusFromStart().(Container)
+	container.
+		Elements()[0].(Container).
+		Elements()[1].(Container).
+		Elements()[1] = container.
+		Elements()[0].(Container).
+		Elements()[1].(Container).
+		Elements()[1].(Container).Unhide()
+	newc, _ = container.FocusNext()
+	container = newc.(Container)
+	focused_container = container.
+		Elements()[0].(Container).
+		Elements()[1].(Container).
+		Elements()[1].(Container)
+	if !focused_container.Focused() || focused_container.Hidden() {
+		t.Errorf("expected container to be focused")
+	}
+}
+
 func TestContainerComplexFocus(t *testing.T) {
 	container := New(
 		true,

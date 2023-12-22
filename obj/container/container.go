@@ -82,13 +82,17 @@ func (c Container) Hidden() bool {
 
 func (c Container) Hide() obj.Collection {
 	c = c.Blur().(Container)
-	c.focusable = false
 	c.hidden = true
 	return c
 }
 
+func (c Container) Unhide() obj.Collection {
+	c.hidden = false
+	return c
+}
+
 func (c Container) Focusable() bool {
-	return c.focusable
+	return c.focusable && !c.hidden
 }
 
 func (c Container) Focused() bool {

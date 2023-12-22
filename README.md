@@ -89,6 +89,7 @@ classDiagram
     AddElements(...Element) Collection
 	  Hidden() bool
 	  Hide() Collection
+    Unhide() Collection
     Focusable() bool
     Focused() bool
     Focus() Collection
