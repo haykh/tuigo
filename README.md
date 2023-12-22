@@ -39,6 +39,7 @@ classDiagram
   class Backend["tuigo.Backend"]{
     States :: List~AppState~
     Constructors :: Map[AppState]~Func[Window]->Window~
+    Updaters :: Map[AppState]~Func[Window,tea.Msg]->Window,tea.Cmd~
     Finalizer :: Func[Map[AppState]~Window~]->Window
   }
 
