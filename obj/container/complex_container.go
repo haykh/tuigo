@@ -4,6 +4,7 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/haykh/tuigo/obj"
 	"github.com/haykh/tuigo/ui"
+	"github.com/haykh/tuigo/ui/theme"
 	"github.com/haykh/tuigo/utils"
 )
 
@@ -34,9 +35,9 @@ func NewComplexContainer(
 				el_views = append(el_views, "")
 			} else {
 				for _, comp := range self.Components() {
-					// if !comp.Hidden() {
-					el_views = append(el_views, comp.View(self.Focused()))
-					// }
+					if !comp.Hidden() || theme.DEBUG_MODE {
+						el_views = append(el_views, comp.View(self.Focused()))
+					}
 				}
 			}
 		default:
