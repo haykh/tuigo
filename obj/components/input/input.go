@@ -8,7 +8,6 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/haykh/tuigo/keys"
 	"github.com/haykh/tuigo/obj"
-	"github.com/haykh/tuigo/obj/container"
 	"github.com/haykh/tuigo/ui"
 	"github.com/haykh/tuigo/utils"
 )
@@ -33,7 +32,7 @@ func NewTextinputModel(label, def, placeholder string) textinput.Model {
 	return m
 }
 
-func New(id int, label, def, placeholder string, inputtype utils.InputType, callback tea.Msg) container.SimpleContainer {
+func New(id int, label, def, placeholder string, inputtype utils.InputType, callback tea.Msg) Input {
 	m := NewTextinputModel(label, def, placeholder)
 	if inputtype == utils.PathInput {
 		m.ShowSuggestions = true
@@ -41,12 +40,12 @@ func New(id int, label, def, placeholder string, inputtype utils.InputType, call
 		m.KeyMap.NextSuggestion = keys.Keys.Down
 		m.KeyMap.PrevSuggestion = keys.Keys.Up
 	}
-	return container.NewSimpleContainer(true, Input{
+	return Input{
 		ElementWithID:       obj.NewElementWithID(id),
 		ElementWithCallback: obj.NewElementWithCallback(callback),
 		inputtype:           inputtype,
 		model:               m,
-	})
+	}
 }
 
 // implementing Element
@@ -96,4 +95,10 @@ func (ti Input) View(focused bool) string {
 // implementing Accessor
 func (ti Input) Data() interface{} {
 	return ti.model.Value()
+}
+
+// special
+func (ti Input) Set(inp string) Input {
+	ti.model.SetValue(inp)
+	return ti
 }

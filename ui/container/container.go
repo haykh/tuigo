@@ -22,14 +22,34 @@ func ViewComplex(focused bool, containerType utils.ContainerType, contents ...st
 	} else {
 		focus_style = unfocusedStyle
 	}
-	if containerType == utils.VerticalContainer {
+	if containerType == utils.VerticalContainer ||
+		containerType == utils.VerticalContainerCenter ||
+		containerType == utils.VerticalContainerRight {
+		var pos lipgloss.Position
+		switch containerType {
+		case utils.VerticalContainer:
+			pos = lipgloss.Left
+		case utils.VerticalContainerCenter:
+			pos = lipgloss.Center
+		case utils.VerticalContainerRight:
+			pos = lipgloss.Right
+		}
 		return focus_style.Render(lipgloss.JoinVertical(
-			lipgloss.Left,
+			pos,
 			contents...,
 		))
 	} else {
+		var pos lipgloss.Position
+		switch containerType {
+		case utils.HorizontalContainer:
+			pos = lipgloss.Center
+		case utils.HorizontalContainerTop:
+			pos = lipgloss.Top
+		case utils.HorizontalContainerBottom:
+			pos = lipgloss.Bottom
+		}
 		return focus_style.Render(lipgloss.JoinHorizontal(
-			lipgloss.Center,
+			pos,
 			contents...,
 		))
 	}

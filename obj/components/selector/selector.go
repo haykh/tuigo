@@ -7,7 +7,6 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/haykh/tuigo/keys"
 	"github.com/haykh/tuigo/obj"
-	"github.com/haykh/tuigo/obj/container"
 	"github.com/haykh/tuigo/ui"
 	"github.com/haykh/tuigo/utils"
 )
@@ -26,8 +25,8 @@ type Selector struct {
 	disabled    map[string]struct{}
 }
 
-func New(id int, options []string, multiselect bool, callback tea.Msg) container.SimpleContainer {
-	return container.NewSimpleContainer(true, Selector{
+func New(id int, options []string, multiselect bool, callback tea.Msg) Selector {
+	return Selector{
 		ElementWithID:       obj.NewElementWithID(id),
 		ElementWithCallback: obj.NewElementWithCallback(callback),
 		multiselect:         multiselect,
@@ -35,7 +34,7 @@ func New(id int, options []string, multiselect bool, callback tea.Msg) container
 		options:             options,
 		selected:            map[string]struct{}{},
 		disabled:            map[string]struct{}{},
-	})
+	}
 }
 
 // implementing Element
@@ -95,13 +94,28 @@ func (s Selector) Toggle() Selector {
 	if _, ok := s.selected[s.options[s.cursor]]; ok {
 		delete(s.selected, s.options[s.cursor])
 	} else {
-
 		if !s.multiselect {
 			s.selected = map[string]struct{}{s.options[s.cursor]: {}}
 		} else {
 			s.selected[s.options[s.cursor]] = struct{}{}
 		}
 	}
+	return s
+}
+
+func (s Selector) ToggleSpecific(opt string) Selector {
+	prev_cursor := s.cursor
+	s.cursor = -1
+	for i, o := range s.options {
+		if o == opt {
+			s.cursor = i
+			break
+		}
+	}
+	if s.cursor != -1 {
+		s = s.Toggle()
+	}
+	s.cursor = prev_cursor
 	return s
 }
 

@@ -7,7 +7,6 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/haykh/tuigo/keys"
 	"github.com/haykh/tuigo/obj"
-	"github.com/haykh/tuigo/obj/container"
 	"github.com/haykh/tuigo/ui"
 	"github.com/haykh/tuigo/utils"
 )
@@ -24,14 +23,14 @@ type Button struct {
 	btntype  utils.ButtonType
 }
 
-func New(id int, label string, btntype utils.ButtonType, callback tea.Msg) container.SimpleContainer {
-	return container.NewSimpleContainer(true, Button{
+func New(id int, label string, btntype utils.ButtonType, callback tea.Msg) Button {
+	return Button{
 		ElementWithID:       obj.NewElementWithID(id),
 		ElementWithCallback: obj.NewElementWithCallback(callback),
 		label:               label,
 		npresses:            0,
 		btntype:             btntype,
-	})
+	}
 }
 
 // implementing Element
@@ -56,4 +55,10 @@ func (b Button) View(focused bool) string {
 // implementing Accessor
 func (b Button) Data() interface{} {
 	return b.npresses
+}
+
+// special
+func (b Button) Set(lbl string) Button {
+	b.label = lbl
+	return b
 }

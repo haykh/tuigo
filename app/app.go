@@ -7,7 +7,7 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/haykh/tuigo/debug"
 	"github.com/haykh/tuigo/keys"
-	"github.com/haykh/tuigo/obj/components/button"
+	component "github.com/haykh/tuigo/obj/components"
 	"github.com/haykh/tuigo/obj/container"
 	"github.com/haykh/tuigo/ui"
 	"github.com/haykh/tuigo/ui/theme"
@@ -55,9 +55,9 @@ func New(backend Backend, enable_debug bool) App {
 
 func NewControls(isFirst, isLast bool) container.Collection {
 	controls := []container.Component{}
-	prevbtn := button.New(-100, "< prev", utils.ControlBtn, utils.PrevStateMsg{})
-	nextbtn := button.New(-200, "next >", utils.ControlBtn, utils.NextStateMsg{})
-	submitbtn := button.New(-300, "submit", utils.ControlBtn, utils.SubmitMsg{})
+	prevbtn := component.NewButton(-100, "< prev", utils.ControlBtn, utils.PrevStateMsg{})
+	nextbtn := component.NewButton(-200, "next >", utils.ControlBtn, utils.NextStateMsg{})
+	submitbtn := component.NewButton(-300, "submit", utils.ControlBtn, utils.SubmitMsg{})
 	if !isFirst {
 		controls = append(controls, prevbtn)
 	}

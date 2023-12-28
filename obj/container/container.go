@@ -39,6 +39,7 @@ type Collection interface {
 type Wrapper interface {
 	Component
 	Element() obj.Element
+	Set(...interface{}) Wrapper
 }
 
 var _ AbstractComponent = (*Container)(nil)

@@ -11,7 +11,11 @@ type ContainerType int
 
 const (
 	VerticalContainer ContainerType = iota
+	VerticalContainerCenter
+	VerticalContainerRight
 	HorizontalContainer
+	HorizontalContainerTop
+	HorizontalContainerBottom
 )
 
 // text types
