@@ -107,7 +107,8 @@ classDiagram
     Blur() Component
     FocusNext() (Component, tea.Cmd)
     FocusPrev() (Component, tea.Cmd)
-    GetElementByID(int) (Component, Accessor)
+    GetContainerByID(int) Component
+    GetElementByID(int) Accessor
   }
   Element <|-- Component
   AbstractComponent <|-- Component

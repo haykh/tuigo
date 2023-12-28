@@ -67,7 +67,11 @@ type Components = []container.Component
 type ContainerType = utils.ContainerType
 
 var VerticalContainer = utils.VerticalContainer
+var VerticalContainerCenter = utils.VerticalContainerCenter
+var VerticalContainerRight = utils.VerticalContainerRight
 var HorizontalContainer = utils.HorizontalContainer
+var HorizontalContainerTop = utils.HorizontalContainerTop
+var HorizontalContainerBottom = utils.HorizontalContainerBottom
 
 type ButtonType = utils.ButtonType
 
