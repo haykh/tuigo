@@ -26,7 +26,8 @@ type Component interface {
 	Blur() Component
 	FocusNext() (Component, tea.Cmd)
 	FocusPrev() (Component, tea.Cmd)
-	GetElementByID(int) (Component, obj.Accessor)
+	GetContainerByID(int) Component
+	GetElementByID(int) obj.Accessor
 }
 
 type Collection interface {

@@ -211,7 +211,6 @@ func (sc SimpleContainer) Blur() Component {
 func (sc SimpleContainer) FocusNext() (Component, tea.Cmd) {
 	if sc.Focusable() {
 		if sc.Focused() {
-			// sc = sc.Blur().(SimpleContainer)
 			return sc, utils.Callback(utils.FocusNextMsg{})
 		} else {
 			sc = sc.Focus().(SimpleContainer)
@@ -224,7 +223,6 @@ func (sc SimpleContainer) FocusNext() (Component, tea.Cmd) {
 func (sc SimpleContainer) FocusPrev() (Component, tea.Cmd) {
 	if sc.Focusable() {
 		if sc.Focused() {
-			// sc = sc.Blur().(SimpleContainer)
 			return sc, utils.Callback(utils.FocusPrevMsg{})
 		} else {
 			sc = sc.Focus().(SimpleContainer)
@@ -234,9 +232,16 @@ func (sc SimpleContainer) FocusPrev() (Component, tea.Cmd) {
 	return sc, nil
 }
 
-func (sc SimpleContainer) GetElementByID(id int) (Component, obj.Accessor) {
+func (sc SimpleContainer) GetElementByID(id int) obj.Accessor {
 	if acc, ok := sc.element.(obj.Accessor); ok && acc.ID() == id {
-		return sc, acc
+		return acc
 	}
-	return nil, nil
+	return nil
+}
+
+func (sc SimpleContainer) GetContainerByID(id int) Component {
+	if acc, ok := sc.element.(obj.Accessor); ok && acc.ID() == id {
+		return sc
+	}
+	return nil
 }

@@ -83,8 +83,7 @@ func main() {
 				case Btn9Msg:
 					return window, tea.Batch(toggle_radio1, en_dis_it3_in_sel5)
 				case Inp1Msg:
-					_, inp_acc := window.GetElementByID(3)
-					typed_text := inp_acc.Data().(string)
+					typed_text := window.GetElementByID(3).Data().(string)
 					return window, tuigo.TgtCmd(
 						2,
 						func(cont tuigo.Wrapper, text tuigo.Accessor) (tuigo.Wrapper, tuigo.Accessor) {

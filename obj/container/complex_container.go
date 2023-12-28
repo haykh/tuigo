@@ -253,11 +253,20 @@ func (cc ComplexContainer) FocusPrev() (Component, tea.Cmd) {
 	return cc, nil
 }
 
-func (cc ComplexContainer) GetElementByID(id int) (Component, obj.Accessor) {
+func (cc ComplexContainer) GetElementByID(id int) obj.Accessor {
 	for _, component := range cc.components {
-		if comp, acc := component.GetElementByID(id); comp != nil {
-			return comp, acc
+		if acc := component.GetElementByID(id); acc != nil {
+			return acc
 		}
 	}
-	return nil, nil
+	return nil
+}
+
+func (cc ComplexContainer) GetContainerByID(id int) Component {
+	for _, component := range cc.components {
+		if comp := component.GetContainerByID(id); comp != nil {
+			return comp
+		}
+	}
+	return nil
 }
