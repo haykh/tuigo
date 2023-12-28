@@ -7,7 +7,6 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/haykh/tuigo/keys"
 	"github.com/haykh/tuigo/obj"
-	"github.com/haykh/tuigo/obj/container"
 	"github.com/haykh/tuigo/ui"
 	"github.com/haykh/tuigo/utils"
 )
@@ -26,8 +25,8 @@ type Selector struct {
 	disabled    map[string]struct{}
 }
 
-func New(id int, options []string, multiselect bool, callback tea.Msg) container.SimpleContainer {
-	return container.NewSimpleContainer(true, Selector{
+func New(id int, options []string, multiselect bool, callback tea.Msg) Selector {
+	return Selector{
 		ElementWithID:       obj.NewElementWithID(id),
 		ElementWithCallback: obj.NewElementWithCallback(callback),
 		multiselect:         multiselect,
@@ -35,7 +34,7 @@ func New(id int, options []string, multiselect bool, callback tea.Msg) container
 		options:             options,
 		selected:            map[string]struct{}{},
 		disabled:            map[string]struct{}{},
-	})
+	}
 }
 
 // implementing Element

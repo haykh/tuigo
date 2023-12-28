@@ -3,7 +3,6 @@ package text
 import (
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/haykh/tuigo/obj"
-	"github.com/haykh/tuigo/obj/container"
 	"github.com/haykh/tuigo/ui"
 	"github.com/haykh/tuigo/utils"
 )
@@ -19,13 +18,13 @@ type Text struct {
 	txt      string
 }
 
-func New(id int, txt string, texttype utils.TextType) container.SimpleContainer {
-	return container.NewSimpleContainer(false, Text{
+func New(id int, txt string, texttype utils.TextType) Text {
+	return Text{
 		ElementWithID:       obj.NewElementWithID(id),
 		ElementWithCallback: obj.NewElementWithCallback(nil),
 		texttype:            texttype,
 		txt:                 txt,
-	})
+	}
 }
 
 // implementing Element

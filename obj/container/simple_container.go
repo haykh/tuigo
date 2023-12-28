@@ -3,6 +3,7 @@ package container
 import (
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/haykh/tuigo/obj"
+	"github.com/haykh/tuigo/obj/components/input"
 	"github.com/haykh/tuigo/ui"
 	"github.com/haykh/tuigo/utils"
 )
@@ -81,6 +82,19 @@ func (sc SimpleContainer) View(bool) string {
 // implementing Wrapper
 func (sc SimpleContainer) Element() obj.Element {
 	return sc.element
+}
+
+func (sc SimpleContainer) Set(args ...interface{}) Wrapper {
+	switch sc.Element().(type) {
+	case input.Input:
+		return sc
+	}
+	// if len(args) == 1 {
+	// 	if el, ok := args[0].(obj.Element); ok {
+	// 		sc.element = el
+	// 	}
+	// }
+	return sc
 }
 
 // implementing Component

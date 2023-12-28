@@ -7,7 +7,6 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/haykh/tuigo/keys"
 	"github.com/haykh/tuigo/obj"
-	"github.com/haykh/tuigo/obj/container"
 	"github.com/haykh/tuigo/ui"
 	"github.com/haykh/tuigo/utils"
 )
@@ -23,13 +22,13 @@ type Radio struct {
 	state bool
 }
 
-func New(id int, label string, callback tea.Msg) container.SimpleContainer {
-	return container.NewSimpleContainer(true, Radio{
+func New(id int, label string, callback tea.Msg) Radio {
+	return Radio{
 		ElementWithID:       obj.NewElementWithID(id),
 		ElementWithCallback: obj.NewElementWithCallback(callback),
 		label:               label,
 		state:               false,
-	})
+	}
 }
 
 // implementing Element

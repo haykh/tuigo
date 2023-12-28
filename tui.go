@@ -4,6 +4,7 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/haykh/tuigo/app"
 	"github.com/haykh/tuigo/obj"
+	component "github.com/haykh/tuigo/obj/components"
 	"github.com/haykh/tuigo/obj/components/button"
 	"github.com/haykh/tuigo/obj/components/input"
 	"github.com/haykh/tuigo/obj/components/radio"
@@ -26,11 +27,11 @@ type Wrapper = container.Wrapper
 // constructors
 var App = app.New
 
-var TextWithID = text.New
-var RadioWithID = radio.New
-var InputWithID = input.New
-var ButtonWithID = button.New
-var SelectorWithID = selector.New
+var TextWithID = component.NewText
+var RadioWithID = component.NewRadio
+var InputWithID = component.NewInput
+var ButtonWithID = component.NewButton
+var SelectorWithID = component.NewSelector
 
 var Container = container.NewComplexContainer
 
@@ -59,6 +60,8 @@ type SelectorElement = selector.Selector
 
 type ComplexContainerElement = container.ComplexContainer
 type SimpleContainerElement = container.SimpleContainer
+type Component = container.Component
+type Components = []container.Component
 
 // component types
 type ContainerType = utils.ContainerType
