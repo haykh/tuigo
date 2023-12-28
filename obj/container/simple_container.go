@@ -3,7 +3,11 @@ package container
 import (
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/haykh/tuigo/obj"
+	"github.com/haykh/tuigo/obj/components/button"
 	"github.com/haykh/tuigo/obj/components/input"
+	"github.com/haykh/tuigo/obj/components/radio"
+	"github.com/haykh/tuigo/obj/components/selector"
+	"github.com/haykh/tuigo/obj/components/text"
 	"github.com/haykh/tuigo/ui"
 	"github.com/haykh/tuigo/utils"
 )
@@ -84,16 +88,77 @@ func (sc SimpleContainer) Element() obj.Element {
 	return sc.element
 }
 
+/**
+ * Set works differently for different components
+ *   Button: Set label
+ *   Input: Set value
+ *   Radio: Toggle
+ *   Selector: Toggle specific option
+ *   Text: Set text
+ */
 func (sc SimpleContainer) Set(args ...interface{}) Wrapper {
-	switch sc.Element().(type) {
+	switch el := sc.Element().(type) {
+	case button.Button:
+		if len(args) == 1 {
+			arg := args[0]
+			if str, ok := arg.(string); ok {
+				el = el.Set(str)
+				sc.element = el
+				return sc
+			} else {
+				panic("invalid argument type for Button.Set")
+			}
+		} else {
+			panic("invalid number of arguments for Button.Set")
+		}
 	case input.Input:
-		return sc
+		if len(args) == 1 {
+			arg := args[0]
+			if str, ok := arg.(string); ok {
+				el = el.Set(str)
+				sc.element = el
+				return sc
+			} else {
+				panic("invalid argument type for Input.Set")
+			}
+		} else {
+			panic("invalid number of arguments for Input.Set")
+		}
+	case radio.Radio:
+		if len(args) != 0 {
+			panic("invalid number of arguments for Radio.Set")
+		} else {
+			el = el.Toggle()
+			sc.element = el
+			return sc
+		}
+	case selector.Selector:
+		if len(args) == 1 {
+			arg := args[0]
+			if str, ok := arg.(string); ok {
+				el = el.ToggleSpecific(str)
+				sc.element = el
+				return sc
+			} else {
+				panic("invalid argument type for Selector.ToggleSpecific")
+			}
+		} else {
+			panic("invalid number of arguments for Selector.ToggleSpecific")
+		}
+	case text.Text:
+		if len(args) == 1 {
+			arg := args[0]
+			if str, ok := arg.(string); ok {
+				el = el.Set(str)
+				sc.element = el
+				return sc
+			} else {
+				panic("invalid argument type for Text.Set")
+			}
+		} else {
+			panic("invalid number of arguments for Text.Set")
+		}
 	}
-	// if len(args) == 1 {
-	// 	if el, ok := args[0].(obj.Element); ok {
-	// 		sc.element = el
-	// 	}
-	// }
 	return sc
 }
 

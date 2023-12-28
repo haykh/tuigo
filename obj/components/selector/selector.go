@@ -94,13 +94,28 @@ func (s Selector) Toggle() Selector {
 	if _, ok := s.selected[s.options[s.cursor]]; ok {
 		delete(s.selected, s.options[s.cursor])
 	} else {
-
 		if !s.multiselect {
 			s.selected = map[string]struct{}{s.options[s.cursor]: {}}
 		} else {
 			s.selected[s.options[s.cursor]] = struct{}{}
 		}
 	}
+	return s
+}
+
+func (s Selector) ToggleSpecific(opt string) Selector {
+	prev_cursor := s.cursor
+	s.cursor = -1
+	for i, o := range s.options {
+		if o == opt {
+			s.cursor = i
+			break
+		}
+	}
+	if s.cursor != -1 {
+		s = s.Toggle()
+	}
+	s.cursor = prev_cursor
 	return s
 }
 

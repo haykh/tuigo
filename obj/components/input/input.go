@@ -96,3 +96,9 @@ func (ti Input) View(focused bool) string {
 func (ti Input) Data() interface{} {
 	return ti.model.Value()
 }
+
+// special
+func (ti Input) Set(inp string) Input {
+	ti.model.SetValue(inp)
+	return ti
+}

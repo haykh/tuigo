@@ -56,3 +56,9 @@ func (b Button) View(focused bool) string {
 func (b Button) Data() interface{} {
 	return b.npresses
 }
+
+// special
+func (b Button) Set(lbl string) Button {
+	b.label = lbl
+	return b
+}
