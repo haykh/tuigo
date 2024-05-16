@@ -24,6 +24,14 @@ type Accessor = obj.Accessor
 type Element = obj.Element
 type Wrapper = container.Wrapper
 
+const NonFocusable = true
+const Focusable = true
+const MultiSelect = true
+const SelectOne = false
+const NoViewLimit = -1
+
+var NoCallback tea.Msg = nil
+
 // constructors
 var App = app.New
 
@@ -47,8 +55,8 @@ var Input = func(lbl, def, plc string, inptype InputType, callback tea.Msg) cont
 var Button = func(lbl string, btntype ButtonType, callback tea.Msg) container.SimpleContainer {
 	return ButtonWithID(-1, lbl, btntype, callback)
 }
-var Selector = func(opt []string, mult bool, callback tea.Msg) container.SimpleContainer {
-	return SelectorWithID(-1, opt, mult, callback)
+var Selector = func(opt []string, mult bool, view_limit int, callback tea.Msg) container.SimpleContainer {
+	return SelectorWithID(-1, opt, mult, view_limit, callback)
 }
 
 // components & elements

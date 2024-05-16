@@ -229,10 +229,12 @@ classDiagram
     -List~string~ options
     -Map~string~ selected
     -Map~string~ disabled
+    -int view_limit
     +Enable(string) -> Selector
     +Disable(string) -> Selector
     +Disabled(string) -> bool
     +Toggle(string) -> Selector
+    +SetViewLimit(int) -> Selector
     +Next() -> Selector
     +Prev() -> Selector
     +Selected() -> List~string~

@@ -23,9 +23,10 @@ type Selector struct {
 	options     []string
 	selected    map[string]struct{}
 	disabled    map[string]struct{}
+	view_limit  int
 }
 
-func New(id int, options []string, multiselect bool, callback tea.Msg) Selector {
+func New(id int, options []string, multiselect bool, view_limit int, callback tea.Msg) Selector {
 	return Selector{
 		ElementWithID:       obj.NewElementWithID(id),
 		ElementWithCallback: obj.NewElementWithCallback(callback),
@@ -34,12 +35,21 @@ func New(id int, options []string, multiselect bool, callback tea.Msg) Selector 
 		options:             options,
 		selected:            map[string]struct{}{},
 		disabled:            map[string]struct{}{},
+		view_limit:          view_limit,
 	}
 }
 
 // implementing Element
 func (s Selector) View(focused bool) string {
-	return ui.SelectorView(focused, s.multiselect, s.cursor, s.options, s.selected, s.disabled)
+	return ui.SelectorView(
+		focused,
+		s.multiselect,
+		s.cursor,
+		s.options,
+		s.selected,
+		s.disabled,
+		s.view_limit,
+	)
 }
 
 func (s Selector) Update(msg tea.Msg) (obj.Element, tea.Cmd) {
@@ -147,4 +157,9 @@ func (m Selector) Selected() []string {
 
 func (m Selector) Cursor() int {
 	return m.cursor
+}
+
+func (m Selector) SetViewLimit(limit int) Selector {
+	m.view_limit = limit
+	return m
 }

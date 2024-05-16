@@ -45,6 +45,7 @@ func View(
 	cursor int,
 	items []string,
 	selected, disabled map[string]struct{},
+	viewLimit int,
 ) string {
 	var itemViews []string
 	var focusstyle, textstyle lipgloss.Style
@@ -61,8 +62,31 @@ func View(
 	} else {
 		mark = checkMark
 	}
+	if viewLimit == len(items)+1 {
+		viewLimit = -1
+	}
+	if viewLimit > 0 {
+		if cursor >= viewLimit && cursor < len(items)-1 {
+			itemViews = append(itemViews, noFocusItemStyle.Render("^v ..."))
+		} else if cursor < viewLimit {
+			itemViews = append(itemViews, noFocusItemStyle.Render("vv ..."))
+		} else if cursor >= len(items)-1 {
+			itemViews = append(itemViews, noFocusItemStyle.Render("^^ ..."))
+		}
+	}
 	for i, item := range items {
 		var itemView string
+		if viewLimit > 0 {
+			if cursor < viewLimit && i >= viewLimit {
+				break
+			}
+			if cursor >= viewLimit && i == cursor+1 {
+				break
+			}
+			if i <= cursor-viewLimit {
+				continue
+			}
+		}
 		lb := textstyle.Render("[")
 		rb := textstyle.Render("]")
 		it := textstyle.Render(item)
