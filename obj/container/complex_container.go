@@ -108,7 +108,20 @@ func (cc ComplexContainer) AddComponents(components ...Component) Collection {
 	return cc
 }
 
+func (cc ComplexContainer) HasVisible() bool {
+	for _, component := range cc.components {
+		if !component.Hidden() {
+			return true
+		}
+	}
+	return len(cc.components) == 0
+}
+
 // implementing Component
+func (cc ComplexContainer) Hidden() bool {
+	return cc.hidden || !cc.HasVisible()
+}
+
 func (cc ComplexContainer) Hide() Component {
 	cc.hidden = true
 	return cc
@@ -171,11 +184,11 @@ func (cc ComplexContainer) Blur() Component {
 }
 
 func (cc ComplexContainer) FocusNext() (Component, tea.Cmd) {
-	if cc.Focusable() && cc.Focused() {
+	if cc.Focusable() && !cc.Hidden() && cc.Focused() {
 		last_foc_id := -1
 		for c := len(cc.components) - 1; c >= 0; c-- {
 			component := cc.components[c]
-			if component.Focusable() {
+			if component.Focusable() && !component.Hidden() {
 				if c > last_foc_id {
 					last_foc_id = c
 					break
@@ -185,7 +198,7 @@ func (cc ComplexContainer) FocusNext() (Component, tea.Cmd) {
 		focus_next := false
 		for c, component := range cc.components {
 			if focus_next {
-				if component.Focusable() {
+				if component.Focusable() && !component.Hidden() {
 					cc.components[c] = component.Focus()
 					return cc, utils.Callback(focusChangedMsg{})
 				}
@@ -213,11 +226,11 @@ func (cc ComplexContainer) FocusNext() (Component, tea.Cmd) {
 }
 
 func (cc ComplexContainer) FocusPrev() (Component, tea.Cmd) {
-	if cc.Focusable() && cc.Focused() {
+	if cc.Focusable() && !cc.Hidden() && cc.Focused() {
 		first_foc_id := len(cc.components) + 1
 		for c, component := range cc.components {
 			if c < first_foc_id {
-				if component.Focusable() {
+				if component.Focusable() && !component.Hidden() {
 					first_foc_id = c
 					break
 				}
@@ -227,7 +240,7 @@ func (cc ComplexContainer) FocusPrev() (Component, tea.Cmd) {
 		for c := len(cc.components) - 1; c >= 0; c-- {
 			component := cc.components[c]
 			if focus_prev {
-				if component.Focusable() {
+				if component.Focusable() && !component.Hidden() {
 					cc.components[c] = component.FocusFromEnd()
 					return cc, utils.Callback(focusChangedMsg{})
 				}

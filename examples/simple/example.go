@@ -61,6 +61,12 @@ func main() {
 					container1,
 					container2,
 				)
+				hidden_container := tuigo.Container(
+					tuigo.Focusable,
+					tuigo.HorizontalContainer,
+					tuigo.Button("hidden_button7", tuigo.SimpleBtn, tuigo.NoCallback).Hide(),
+					tuigo.Text("hidden_text", tuigo.DimmedText).Hide(),
+				)
 
 				container := tuigo.Container(
 					tuigo.Focusable,
@@ -73,6 +79,7 @@ func main() {
 						tuigo.NoViewLimit,
 						tuigo.NoCallback,
 					),
+					hidden_container,
 					tuigo.InputWithID(3, "input1", "<default>", "<placeholder>", tuigo.TextInput, Inp1Msg{}),
 					tuigo.ButtonWithID(9, "button9", tuigo.AcceptBtn, Btn9Msg{}),
 					container3,
@@ -131,7 +138,7 @@ func main() {
 			)
 		},
 	}
-	p := tea.NewProgram(tuigo.App(backend, false))
+	p := tea.NewProgram(tuigo.App(backend, true))
 	if _, err := p.Run(); err != nil {
 		fmt.Printf("error: %v", err)
 		os.Exit(1)
