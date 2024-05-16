@@ -79,10 +79,10 @@ func main() {
 						tuigo.NoViewLimit,
 						tuigo.NoCallback,
 					),
-					hidden_container,
 					tuigo.InputWithID(3, "input1", "<default>", "<placeholder>", tuigo.TextInput, Inp1Msg{}),
 					tuigo.ButtonWithID(9, "button9", tuigo.AcceptBtn, Btn9Msg{}),
 					container3,
+					hidden_container,
 				)
 				return container
 			},

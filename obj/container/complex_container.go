@@ -147,7 +147,7 @@ func (cc ComplexContainer) Focus() Component {
 }
 
 func (cc ComplexContainer) FocusFromStart() Component {
-	if cc.Focusable() && !cc.Focused() {
+	if cc.Focusable() && !cc.Focused() && !cc.Hidden() {
 		cc.focused = true
 		for c, component := range cc.components {
 			cc.components[c] = component.FocusFromStart()
@@ -160,7 +160,7 @@ func (cc ComplexContainer) FocusFromStart() Component {
 }
 
 func (cc ComplexContainer) FocusFromEnd() Component {
-	if cc.Focusable() && !cc.Focused() {
+	if cc.Focusable() && !cc.Focused() && !cc.Hidden() {
 		cc.focused = true
 		for c := len(cc.components) - 1; c >= 0; c-- {
 			component := cc.components[c]
