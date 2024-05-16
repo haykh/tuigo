@@ -23,8 +23,8 @@ func NewRadio(id int, label string, callback tea.Msg) container.SimpleContainer 
 	return container.NewSimpleContainer(true, radio.New(id, label, callback))
 }
 
-func NewSelector(id int, options []string, multiselect bool, callback tea.Msg) container.SimpleContainer {
-	return container.NewSimpleContainer(true, selector.New(id, options, multiselect, callback))
+func NewSelector(id int, options []string, multiselect bool, view_limit int, callback tea.Msg) container.SimpleContainer {
+	return container.NewSimpleContainer(true, selector.New(id, options, multiselect, view_limit, callback))
 }
 
 func NewText(id int, txt string, texttype utils.TextType) container.SimpleContainer {

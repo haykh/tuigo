@@ -56,8 +56,9 @@ func SelectorView(
 	cursor int,
 	items []string,
 	selected, disabled map[string]struct{},
+	view_limit int,
 ) string {
-	return selector.View(focused, multiselect, cursor, items, selected, disabled)
+	return selector.View(focused, multiselect, cursor, items, selected, disabled, view_limit)
 }
 
 func ButtonView(focused bool, label string, btntype utils.ButtonType) string {

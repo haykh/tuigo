@@ -35,21 +35,43 @@ func main() {
 				for item, price := range food_menu {
 					food_options = append(food_options, fmt.Sprintf("%s ($%.2f)", item, price))
 				}
-				food_selector := tuigo.SelectorWithID(1, food_options, true, nil)
+				food_selector := tuigo.SelectorWithID(
+					1,
+					food_options,
+					tuigo.MultiSelect,
+					tuigo.NoViewLimit,
+					tuigo.NoCallback,
+				)
 				food_container := tuigo.Container(
-					true, tuigo.VerticalContainer, tuigo.Text("Food", tuigo.NormalText), food_selector,
+					tuigo.Focusable,
+					tuigo.VerticalContainer,
+					tuigo.Text("Food", tuigo.NormalText),
+					food_selector,
 				)
 
 				drinks_options := []string{}
 				for item, price := range drinks_menu {
 					drinks_options = append(drinks_options, fmt.Sprintf("%s ($%.2f)", item, price))
 				}
-				drinks_selector := tuigo.SelectorWithID(2, drinks_options, true, nil)
+				drinks_selector := tuigo.SelectorWithID(
+					2,
+					drinks_options,
+					tuigo.MultiSelect,
+					tuigo.NoViewLimit,
+					tuigo.NoCallback,
+				)
 				drinks_container := tuigo.Container(
-					true, tuigo.VerticalContainer, tuigo.Text("Drinks", tuigo.NormalText), drinks_selector,
+					tuigo.Focusable,
+					tuigo.VerticalContainer,
+					tuigo.Text("Drinks", tuigo.NormalText),
+					drinks_selector,
 				)
 				return tuigo.Container(
-					true, tuigo.VerticalContainer, title, food_container, drinks_container,
+					tuigo.Focusable,
+					tuigo.VerticalContainer,
+					title,
+					food_container,
+					drinks_container,
 				)
 			},
 			"order": func(prev tuigo.Window) tuigo.Window {
@@ -67,16 +89,31 @@ func main() {
 					}
 				}
 				subtotal := tuigo.Text(fmt.Sprintf("subtotal: $%.2f", price), tuigo.DimmedText)
-				utencils := tuigo.RadioWithID(1, "include utencils", nil)
-				pickup_or_delivery := tuigo.SelectorWithID(2, []string{"pickup", "delivery"}, false, pickupOrDeliveryMsg{})
-				address_entry := tuigo.InputWithID(4, "delivery address", "<address>", "<address>", tuigo.TextInput, nil).Hide()
+				utencils := tuigo.RadioWithID(1, "include utencils", tuigo.NoCallback)
+				pickup_or_delivery := tuigo.SelectorWithID(
+					2,
+					[]string{"pickup", "delivery"},
+					tuigo.SelectOne,
+					tuigo.NoViewLimit,
+					pickupOrDeliveryMsg{},
+				)
+				address_entry := tuigo.InputWithID(4, "delivery address", "<address>", "<address>", tuigo.TextInput, tuigo.NoCallback).Hide()
 				container := tuigo.Container(
-					true,
+					tuigo.Focusable,
 					tuigo.HorizontalContainer,
 					tuigo.TextWithID(3, item_str, tuigo.NormalText),
-					tuigo.Container(true, tuigo.VerticalContainer, utencils, pickup_or_delivery, address_entry),
+					tuigo.Container(tuigo.Focusable,
+						tuigo.VerticalContainer,
+						utencils,
+						pickup_or_delivery,
+						address_entry,
+					),
 				)
-				return tuigo.Container(true, tuigo.VerticalContainer, container, subtotal)
+				return tuigo.Container(tuigo.Focusable,
+					tuigo.VerticalContainer,
+					container,
+					subtotal,
+				)
 			},
 		},
 		Updaters: map[tuigo.AppState]tuigo.Updater{

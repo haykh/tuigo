@@ -18,31 +18,61 @@ func main() {
 		Constructors: map[tuigo.AppState]tuigo.Constructor{
 			"initial": func(tuigo.Window) tuigo.Window {
 				container1 := tuigo.Container(
-					true,
+					tuigo.Focusable,
 					tuigo.VerticalContainer,
 					tuigo.Button("button1", tuigo.SimpleBtn, Btn1Msg{}),
-					tuigo.RadioWithID(1, "radio1", nil),
+					tuigo.RadioWithID(1, "radio1", tuigo.NoCallback),
 					tuigo.Text("label1", tuigo.NormalText),
-					tuigo.Input("input2", "<default>", "<placeholder>", tuigo.PathInput, nil),
+					tuigo.Input("input2", "<default>", "<placeholder>", tuigo.PathInput, tuigo.NoCallback),
 				)
 
 				container2 := tuigo.Container(
-					true,
+					tuigo.Focusable,
 					tuigo.VerticalContainer,
-					tuigo.Text("text2", tuigo.DimmedText),
-					tuigo.Button("hidden_button4", tuigo.SimpleBtn, nil).Hide(),
-					tuigo.SelectorWithID(5, []string{"item1", "item2", "item3", "item4", "item5"}, false, nil),
+					tuigo.Text("very long\nlist of items", tuigo.DimmedText),
+					tuigo.Button("hidden_button4", tuigo.SimpleBtn, tuigo.NoCallback).Hide(),
+					tuigo.SelectorWithID(
+						5,
+						[]string{
+							"item1",
+							"item2",
+							"item3",
+							"item4",
+							"item5",
+							"item6",
+							"item7",
+							"item8",
+							"item9",
+							"item10",
+							"item11",
+							"item12",
+							"item13",
+						},
+						tuigo.SelectOne,
+						5,
+						tuigo.NoCallback,
+					),
 					tuigo.Text("text3", tuigo.DimmedText),
 				)
 
-				container3 := tuigo.Container(true, tuigo.HorizontalContainer, container1, container2)
+				container3 := tuigo.Container(
+					tuigo.Focusable,
+					tuigo.HorizontalContainer,
+					container1,
+					container2,
+				)
 
 				container := tuigo.Container(
-					true,
+					tuigo.Focusable,
 					tuigo.VerticalContainer,
 					tuigo.TextWithID(2, "label2", tuigo.NormalText),
-					tuigo.Button("button6", tuigo.SimpleBtn, nil),
-					tuigo.Selector([]string{"item1", "item2", "item3"}, true, nil),
+					tuigo.Button("button6", tuigo.SimpleBtn, tuigo.NoCallback),
+					tuigo.Selector(
+						[]string{"item1", "item2", "item3"},
+						tuigo.MultiSelect,
+						tuigo.NoViewLimit,
+						tuigo.NoCallback,
+					),
 					tuigo.InputWithID(3, "input1", "<default>", "<placeholder>", tuigo.TextInput, Inp1Msg{}),
 					tuigo.ButtonWithID(9, "button9", tuigo.AcceptBtn, Btn9Msg{}),
 					container3,
@@ -51,11 +81,11 @@ func main() {
 			},
 			"final": func(prev tuigo.Window) tuigo.Window {
 				return tuigo.Container(
-					true,
+					tuigo.Focusable,
 					tuigo.VerticalContainer,
-					tuigo.Button("button9", tuigo.SimpleBtn, nil),
-					tuigo.Input("input3", "<default>", "<placeholder>", tuigo.TextInput, nil),
-					tuigo.Radio("radio2", nil),
+					tuigo.Button("button9", tuigo.SimpleBtn, tuigo.NoCallback),
+					tuigo.Input("input3", "<default>", "<placeholder>", tuigo.TextInput, tuigo.NoCallback),
+					tuigo.Radio("radio2", tuigo.NoCallback),
 				)
 			},
 		},
@@ -96,7 +126,7 @@ func main() {
 		},
 		Finalizer: func(containers map[tuigo.AppState]tuigo.Window) tuigo.Window {
 			return tuigo.Container(
-				false, tuigo.VerticalContainer,
+				tuigo.NonFocusable, tuigo.VerticalContainer,
 				tuigo.Text("app finalized", tuigo.NormalText),
 			)
 		},
