@@ -7,11 +7,11 @@ var (
 )
 
 var (
-	ColorDimmed  = lipgloss.AdaptiveColor{Light: "#272a31", Dark: "#31353d"}
-	ColorSuccess = lipgloss.AdaptiveColor{Light: "#3eb86d", Dark: "#67cc8e"}
-	ColorLight   = lipgloss.AdaptiveColor{Light: "#ffffff", Dark: "#f2f2f2"}
-	ColorSpecial = lipgloss.AdaptiveColor{Light: "#ee9723", Dark: "#F3B562"}
-	ColorAccent  = lipgloss.AdaptiveColor{Light: "#ea2323", Dark: "#F06060"}
+	ColorDimmed  = lipgloss.AdaptiveColor{Light: "7", Dark: "0"}
+	ColorSuccess = lipgloss.AdaptiveColor{Light: "2", Dark: "2"}
+	ColorLight   = lipgloss.AdaptiveColor{Light: "0", Dark: "7"}
+	ColorSpecial = lipgloss.AdaptiveColor{Light: "3", Dark: "3"}
+	ColorAccent  = lipgloss.AdaptiveColor{Light: "1", Dark: "1"}
 )
 
 var (
