@@ -188,14 +188,14 @@ func (sc SimpleContainer) Focus() Component {
 }
 
 func (sc SimpleContainer) FocusFromStart() Component {
-	if sc.Focusable() && !sc.Focused() {
+	if sc.Focusable() && !sc.Hidden() && !sc.Focused() {
 		sc.focused = true
 	}
 	return sc
 }
 
 func (sc SimpleContainer) FocusFromEnd() Component {
-	if sc.Focusable() && !sc.Focused() {
+	if sc.Focusable() && !sc.Hidden() && !sc.Focused() {
 		sc.focused = true
 	}
 	return sc
@@ -209,7 +209,7 @@ func (sc SimpleContainer) Blur() Component {
 }
 
 func (sc SimpleContainer) FocusNext() (Component, tea.Cmd) {
-	if sc.Focusable() {
+	if sc.Focusable() && !sc.Hidden() {
 		if sc.Focused() {
 			return sc, utils.Callback(utils.FocusNextMsg{})
 		} else {
@@ -221,7 +221,7 @@ func (sc SimpleContainer) FocusNext() (Component, tea.Cmd) {
 }
 
 func (sc SimpleContainer) FocusPrev() (Component, tea.Cmd) {
-	if sc.Focusable() {
+	if sc.Focusable() && !sc.Hidden() {
 		if sc.Focused() {
 			return sc, utils.Callback(utils.FocusPrevMsg{})
 		} else {

@@ -18,6 +18,7 @@ type Component interface {
 	AbstractComponent
 	Hide() Component
 	Unhide() Component
+	Hidden() bool
 	Enable() Component
 	Disable() Component
 	Focus() Component
@@ -35,6 +36,7 @@ type Collection interface {
 	Type() utils.ContainerType
 	Components() []Component
 	AddComponents(...Component) Collection
+	HasVisible() bool
 }
 
 type Wrapper interface {
