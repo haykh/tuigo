@@ -148,11 +148,17 @@ func (cc ComplexContainer) Focus() Component {
 
 func (cc ComplexContainer) FocusFromStart() Component {
 	if cc.Focusable() && !cc.Focused() && !cc.Hidden() {
-		cc.focused = true
+		if len(cc.components) == 0 {
+			cc.focused = true
+			return cc
+		}
 		for c, component := range cc.components {
-			cc.components[c] = component.FocusFromStart()
-			if cc.components[c].Focused() {
-				break
+			if !component.Hidden() && component.Focusable() {
+				cc.components[c] = component.FocusFromStart()
+				if cc.components[c].Focused() {
+					cc.focused = true
+					return cc
+				}
 			}
 		}
 	}
@@ -161,12 +167,18 @@ func (cc ComplexContainer) FocusFromStart() Component {
 
 func (cc ComplexContainer) FocusFromEnd() Component {
 	if cc.Focusable() && !cc.Focused() && !cc.Hidden() {
-		cc.focused = true
+		if len(cc.components) == 0 {
+			cc.focused = true
+			return cc
+		}
 		for c := len(cc.components) - 1; c >= 0; c-- {
 			component := cc.components[c]
-			cc.components[c] = component.FocusFromEnd()
-			if cc.components[c].Focused() {
-				break
+			if !component.Hidden() && component.Focusable() {
+				cc.components[c] = component.FocusFromEnd()
+				if cc.components[c].Focused() {
+					cc.focused = true
+					return cc
+				}
 			}
 		}
 	}
@@ -200,7 +212,11 @@ func (cc ComplexContainer) FocusNext() (Component, tea.Cmd) {
 			if focus_next {
 				if component.Focusable() && !component.Hidden() {
 					cc.components[c] = component.Focus()
-					return cc, utils.Callback(focusChangedMsg{})
+					if cc.components[c].Focused() {
+						return cc, utils.Callback(focusChangedMsg{})
+					} else {
+						return cc, utils.Callback(utils.FocusNextMsg{})
+					}
 				}
 			} else if component.Focused() {
 				comp, cmd := component.FocusNext()
@@ -242,7 +258,11 @@ func (cc ComplexContainer) FocusPrev() (Component, tea.Cmd) {
 			if focus_prev {
 				if component.Focusable() && !component.Hidden() {
 					cc.components[c] = component.FocusFromEnd()
-					return cc, utils.Callback(focusChangedMsg{})
+					if cc.components[c].Focused() {
+						return cc, utils.Callback(focusChangedMsg{})
+					} else {
+						return cc, utils.Callback(utils.FocusPrevMsg{})
+					}
 				}
 			} else if component.Focused() {
 				el, cmd := component.FocusPrev()
