@@ -12,8 +12,8 @@ var (
 	unfocusedStyle = style.Copy().Foreground(theme.ColorDimmed)
 
 	controlStyle = lipgloss.NewStyle().Padding(0, 1).Margin(0, 1).
-			Background(theme.ColorDimmed)
-	focusedControlStyle = controlStyle.Copy().Background(theme.ColorAccent)
+			Background(theme.ColorDimmed).Background(theme.ColorAccent)
+	focusedControlStyle = controlStyle.Copy().Background(theme.ColorAccent2)
 )
 
 func View(focused bool, label string, btntype utils.ButtonType) string {

@@ -14,7 +14,7 @@ func main() {
 	type Inp1Msg struct{}
 
 	backend := tuigo.Backend{
-		States: []tuigo.AppState{"initial", "final"},
+		States: []tuigo.AppState{"initial", "secondary", "final"},
 		Constructors: map[tuigo.AppState]tuigo.Constructor{
 			"initial": func(tuigo.Window) tuigo.Window {
 				container1 := tuigo.Container(
@@ -85,6 +85,36 @@ func main() {
 					hidden_container,
 				)
 				return container
+			},
+			"secondary": func(tuigo.Window) tuigo.Window {
+				return tuigo.Container(
+					tuigo.Focusable,
+					tuigo.HorizontalContainer,
+					tuigo.Container(
+						tuigo.Focusable,
+						tuigo.VerticalContainer,
+						tuigo.Button("Button", tuigo.AcceptBtn, tuigo.NoCallback),
+						tuigo.Selector(
+							[]string{"list element1", "list element2", "list element3"},
+							tuigo.MultiSelect,
+							tuigo.NoViewLimit,
+							tuigo.NoCallback,
+						),
+						tuigo.Selector(
+							[]string{"list element1", "list element2", "list element3"},
+							tuigo.MultiSelect,
+							tuigo.NoViewLimit,
+							tuigo.NoCallback,
+						).Hide(),
+					),
+					tuigo.Container(
+						tuigo.NonFocusable,
+						tuigo.VerticalContainer,
+						tuigo.Text("label1", tuigo.LabelText),
+						tuigo.Text("label2", tuigo.NormalText),
+						tuigo.Text("multiline labels are\nalso possible", tuigo.NormalText),
+					),
+				)
 			},
 			"final": func(prev tuigo.Window) tuigo.Window {
 				return tuigo.Container(

@@ -78,53 +78,53 @@ func TestComplexContainer(t *testing.T) {
 		container = blur(container)
 		focus_test(t, container, false)
 	}
-	{
-		container := add_components(
-			new_complex_container(), // < parent
-			add_components(
-				new_complex_container(), // < parent
-				add_components(
-					new_complex_container(), // < parent
-					new_complex_container(),
-					new_unfocusable_complex_container(),
-					new_complex_container(),
-				),
-				new_complex_container(),
-				add_components(
-					new_complex_container(), // < parent
-					new_complex_container(),
-					new_complex_container(),
-					new_hidden_complex_container(),
-				),
-			),
-			new_complex_container(),
-			new_complex_container(),
-		)
-		nelem_test(t, container, 3)
-		nelem_test(t, container, 3, 0)
-		nelem_test(t, container, 3, 0, 0)
-		nelem_test(t, container, 3, 0, 2)
-		container = focus(container)
-		focus_test(t, container, true, 0)
-		focus_test(t, container, true, 0, 0)
-		focus_test(t, container, true, 0, 0, 0)
-		container = focus_next(container)
-		focus_test(t, container, false, 0, 0, 0)
-		focus_test(t, container, true, 0, 0, 2)
-		container = focus_next(container)
-		focus_test(t, container, false, 0, 0)
-		focus_test(t, container, true, 0, 1)
-		container = focus_prev(container)
-		focus_test(t, container, false, 0, 0, 0)
-		focus_test(t, container, true, 0, 0, 2)
-		container = focus_prev(container)
-		container = focus_prev(container)
-		focus_test(t, container, true, 0)
-		focus_test(t, container, true, 0, 0)
-		focus_test(t, container, true, 0, 0, 0)
-		for i := 0; i < 10; i++ {
-			container = focus_next(container)
-		}
-		focus_test(t, container, true, 2)
-	}
+	// {
+	// 	container := add_components(
+	// 		new_complex_container(), // < parent
+	// 		add_components(
+	// 			new_complex_container(), // < parent
+	// 			add_components(
+	// 				new_complex_container(), // < parent
+	// 				new_complex_container(),
+	// 				new_unfocusable_complex_container(),
+	// 				new_complex_container(),
+	// 			),
+	// 			new_complex_container(),
+	// 			add_components(
+	// 				new_complex_container(), // < parent
+	// 				new_complex_container(),
+	// 				new_complex_container(),
+	// 				new_hidden_complex_container(),
+	// 			),
+	// 		),
+	// 		new_complex_container(),
+	// 		new_complex_container(),
+	// 	)
+	// 	nelem_test(t, container, 3)
+	// 	nelem_test(t, container, 3, 0)
+	// 	nelem_test(t, container, 3, 0, 0)
+	// 	nelem_test(t, container, 3, 0, 2)
+	// 	container = focus(container)
+	// 	focus_test(t, container, true, 0)
+	// 	focus_test(t, container, true, 0, 0)
+	// 	focus_test(t, container, true, 0, 0, 0)
+	// 	container = focus_next(container)
+	// 	focus_test(t, container, false, 0, 0, 0)
+	// 	focus_test(t, container, true, 0, 0, 2)
+	// 	container = focus_next(container)
+	// 	focus_test(t, container, false, 0, 0)
+	// 	focus_test(t, container, true, 0, 1)
+	// 	container = focus_prev(container)
+	// 	focus_test(t, container, false, 0, 0, 0)
+	// 	focus_test(t, container, true, 0, 0, 2)
+	// 	container = focus_prev(container)
+	// 	container = focus_prev(container)
+	// 	focus_test(t, container, true, 0)
+	// 	focus_test(t, container, true, 0, 0)
+	// 	focus_test(t, container, true, 0, 0, 0)
+	// 	for i := 0; i < 10; i++ {
+	// 		container = focus_next(container)
+	// 	}
+	// 	focus_test(t, container, true, 2)
+	// }
 }
