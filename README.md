@@ -17,7 +17,6 @@ see [`examples/`](examples/) for usage examples of `tuigo` for building applicat
   init: {
     'theme': 'base',
     'themeVariables': {
-        'fontFamily': 'JetBrainsMono Nerd Font, BlexMono Nerd Font, Roboto Mono, Source Code Pro, monospace',
         'primaryColor': '#4C2FAD',
         'primaryTextColor': '#FFFFFF',
         'lineColor': '#E840E0',
@@ -66,7 +65,6 @@ classDiagram
   init: {
     'theme': 'base',
     'themeVariables': {
-        'fontFamily': 'JetBrainsMono Nerd Font, BlexMono Nerd Font, Roboto Mono, Source Code Pro, monospace',
         'primaryColor': '#4C2FAD',
         'primaryTextColor': '#FFFFFF',
         'lineColor': '#E840E0',
@@ -157,7 +155,6 @@ classDiagram
   init: {
     'theme': 'base',
     'themeVariables': {
-        'fontFamily': 'JetBrainsMono Nerd Font, BlexMono Nerd Font, Roboto Mono, Source Code Pro, monospace',
         'primaryColor': '#4C2FAD',
         'primaryTextColor': '#FFFFFF',
         'lineColor': '#E840E0',
